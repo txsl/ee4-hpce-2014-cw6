@@ -1,0 +1,7 @@
+LogLevel = 2 -> 2
+[run_puzzle], 1426108965.53, 2, Created log.
+[run_puzzle], 1426108965.53, 2, Creating random input
+[run_puzzle], 1426108965.53, 2, Executing puzzle
+[run_puzzle], 1426108969.11, 2, Executing reference
+[run_puzzle], 1426108972.68, 2, Checking output
+[run_puzzle], 1426108972.68, 2, Output is correct
