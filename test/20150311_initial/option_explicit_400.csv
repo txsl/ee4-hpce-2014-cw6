@@ -1,0 +1,10 @@
+LogLevel = 2 -> 2
+[run_puzzle], 1426127412.79, 2, Created log.
+[run_puzzle], 1426127412.79, 2, Creating random input
+[run_puzzle], 1426127412.79, 2, Executing puzzle
+[run_puzzle], 1426127412.79, 2, Params: u=1.04198, d=0.959708, wU=0.246487, wM=0.499908, wD=0.25347
+[run_puzzle], 1426127412.79, 2, Executing reference
+[run_puzzle], 1426127412.79, 2, Params: u=1.04198, d=0.959708, wU=0.246487, wM=0.499908, wD=0.25347
+[run_puzzle], 1426127412.80, 2, Checking output
+value = 0.260779, alt=0.260779, diff=0, tol=2e-07
+[run_puzzle], 1426127412.80, 2, Output is correct
