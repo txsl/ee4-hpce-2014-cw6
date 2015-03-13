@@ -1,6 +1,8 @@
 #ifndef user_life_hpp
 #define user_life_hpp
 
+#include "tbb/parallel_for.h"
+
 #include "puzzler/puzzles/life.hpp"
 
 class LifeProvider
@@ -35,9 +37,19 @@ public:
 
       std::vector<bool> next(n*n);
 
-      for(unsigned x=0; x<n; x++){
+      std::vector<bool> orig_next(n*n);
+
+      auto impl = [&](int x){
         for(unsigned y=0; y<n; y++){
           next[y*n+x]=update(n, state, x, y);
+        }
+      };
+
+      tbb::parallel_for <size_t> (0, n, impl);
+
+      for(unsigned x=0; x<n; x++){
+        for(unsigned y=0; y<n; y++){
+          orig_next[y*n+x]=update(n, state, x, y);
         }
       }
 
@@ -45,15 +57,47 @@ public:
 
       // The weird form of log is so that there is little overhead
       // if logging is disabled
-      log->Log(puzzler::Log_Debug, [&](std::ostream &dst){
+      log->Log(puzzler::Log_Info, [&](std::ostream &dst){
         dst<<"\n";
         for(unsigned y=0; y<n; y++){
           for(unsigned x=0; x<n; x++){
-            dst<<(state[y*n+x]?'x':' ');
+            dst<<(next[y*n+x]?'x':' ');
+            // dst<<(orig_next[y*n+x]?'o_x':' ');
           }
           dst<<"\n";
         }
       });
+
+      log->Log(puzzler::Log_Info, [&](std::ostream &dst){
+        dst<<"\n";
+        for(unsigned y=0; y<n; y++){
+          for(unsigned x=0; x<n; x++){
+            // dst<<(next[y*n+x]?'x':' ');
+            dst<<(orig_next[y*n+x]?'o':' ');
+          }
+          dst<<"\n";
+        }
+      });
+
+      log->Log(puzzler::Log_Info, [&](std::ostream &dst){
+        dst<<"\n";
+        for(unsigned y=0; y<n; y++){
+          for(unsigned x=0; x<n; x++){
+            dst<<(orig_next[y*n+x] == next[y*n+x]?' ':'x');
+          }
+          dst<<"\n";
+        }
+      });
+    
+      log->Log(puzzler::Log_Info, [&](std::ostream &dst){
+        if(orig_next == next){
+          dst<<"equal";
+        } else {
+          dst<<"not equal";
+        }
+        dst<< "Orig size: " << orig_next.size() << " New size: " << next.size();
+      });
+
     }
 
     log->LogVerbose("Finished steps");
