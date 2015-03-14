@@ -36,11 +36,8 @@ for m in methods:
                 if idx == 0:
                     continue
 
-                # print row
-
                 if row[3] == ' Executing puzzle':
                     start_test = float(row[1])
-                    print row[1], start_test
                 
                 elif row[3] == ' Executing reference':
                     start_ref_time = float(row[1])
@@ -60,9 +57,9 @@ for m in methods:
             ref_output.append(ref_time)
             test_output.append(test_time)
 
-    print 'size:', size, len(size)
-    print 'ref_output:', ref_output, len(ref_output)
-    print 'test_output:', test_output, len(test_output)
+    # print 'size:', size, len(size)
+    # print 'ref_output:', ref_output, len(ref_output)
+    # print 'test_output:', test_output, len(test_output)
 
     plt.plot(size, ref_output)
     legend.append("Reference output")
