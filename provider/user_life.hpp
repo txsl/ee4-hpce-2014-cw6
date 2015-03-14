@@ -32,16 +32,18 @@ public:
       }
     });
 
+    std::vector<int> int_state(state.begin(), state.end());
+
     for(unsigned i=0; i<input->steps; i++){
       log->LogVerbose("Starting iteration %d of %d\n", i, input->steps);
 
-      std::vector<bool> next(n*n);
+      std::vector<int> next(n*n);
 
       std::vector<bool> orig_next(n*n);
 
       auto impl = [&](int x){
         for(unsigned y=0; y<n; y++){
-          next[y*n+x]=update(n, state, x, y);
+          next[y*n+x]=int_update(n, int_state, x, y);
         }
       };
 
@@ -53,7 +55,8 @@ public:
         }
       }
 
-      state=next;
+      state = orig_next;
+      int_state = next;
 
       // The weird form of log is so that there is little overhead
       // if logging is disabled
@@ -89,21 +92,62 @@ public:
         }
       });
     
-      log->Log(puzzler::Log_Info, [&](std::ostream &dst){
-        if(orig_next == next){
-          dst<<"equal";
-        } else {
-          dst<<"not equal";
-        }
-        dst<< "Orig size: " << orig_next.size() << " New size: " << next.size();
-      });
+      // log->Log(puzzler::Log_Info, [&](std::ostream &dst){
+      //   bool b_n = (next != 0);
+      //   if(orig_next == b_n){
+      //     dst<<"equal";
+      //   } else {
+      //     dst<<"not equal";
+      //   }
+      //   dst<< "Orig size: " << orig_next.size() << " New size: " << next.size();
+      // });
 
     }
 
     log->LogVerbose("Finished steps");
     log->LogVerbose("This is a custom life");
 
+    // state(int_state.begin(), int_state.end());
+
+    for(unsigned x=0; x<n; x++){
+      for(unsigned y=0; y<n; y++){
+        state[y*n+x]=int(int_state[y*n+x]);
+      }
+    }    
+
     output->state=state;
+  }
+
+  int int_update(int n, const std::vector<int> &curr, int x, int y) const
+  {
+    int neighbours=0;
+    for(int dx=-1;dx<=+1;dx++){
+      for(int dy=-1;dy<=+1;dy++){
+        int ox=(n+x+dx)%n; // handle wrap-around
+        int oy=(n+y+dy)%n;
+
+        if(curr.at(oy*n+ox) && !(dx==0 && dy==0))
+          neighbours++;
+      }
+    }
+
+    if(curr[n*y+x]){
+      // alive
+      if(neighbours<2){
+        return false;
+      }else if(neighbours>3){
+        return false;
+      }else{
+        return true;
+      }
+    }else{
+      // dead
+      if(neighbours==3){
+        return true;
+      }else{
+        return false;
+      }
+    }
   }
 
 };
