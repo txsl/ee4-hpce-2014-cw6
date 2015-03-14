@@ -8,192 +8,192 @@
 
 namespace puzzler
 {
-  class LifePuzzle;
-  class LifeInput;
-  class LifeOutput;
+class LifePuzzle;
+class LifeInput;
+class LifeOutput;
 
-  class LifeInput
-    : public Puzzle::Input
+class LifeInput
+  : public Puzzle::Input
+{
+public:
+
+  uint32_t n;
+  uint32_t steps;
+  std::vector<bool> state;
+
+  LifeInput(const Puzzle *puzzle, int scale)
+    : Puzzle::Input(puzzle, scale)
+  {}
+
+  LifeInput(std::string format, std::string name, PersistContext &ctxt)
+    : Puzzle::Input(format, name, ctxt)
   {
-  public:
+    PersistImpl(ctxt);
+  }
 
-    uint32_t n;
-    uint32_t steps;
-    std::vector<bool> state;
-
-    LifeInput(const Puzzle *puzzle, int scale)
-      : Puzzle::Input(puzzle, scale)
-    {}
-
-    LifeInput(std::string format, std::string name, PersistContext &ctxt)
-      : Puzzle::Input(format, name, ctxt)
-    {
-      PersistImpl(ctxt);
-    }
-
-    virtual void PersistImpl(PersistContext &conn) override final
-    {
-      conn.SendOrRecv(n);
-      conn.SendOrRecv(steps);
-      conn.SendOrRecv(state);
-    }
-
-
-
-  };
-
-  class LifeOutput
-    : public Puzzle::Output
+  virtual void PersistImpl(PersistContext &conn) override final
   {
-  public:
-    std::vector<bool> state;
-
-    LifeOutput(const Puzzle *puzzle, const Puzzle::Input *input)
-      : Puzzle::Output(puzzle, input)
-    {}
-
-    LifeOutput(std::string format, std::string name, PersistContext &ctxt)
-      : Puzzle::Output(format, name, ctxt)
-    {
-      PersistImpl(ctxt);
-    }
-
-    virtual void PersistImpl(PersistContext &conn) override
-    {
-      conn.SendOrRecv(state);
-    }
-
-    virtual bool Equals(const Output *output) const override
-    {
-      auto pOutput=As<LifeOutput>(output);
-      return state==pOutput->state;
-    }
-
-  };
+    conn.SendOrRecv(n);
+    conn.SendOrRecv(steps);
+    conn.SendOrRecv(state);
+  }
 
 
-  class LifePuzzle
-    : public PuzzleBase<LifeInput,LifeOutput>
+
+};
+
+class LifeOutput
+  : public Puzzle::Output
+{
+public:
+  std::vector<bool> state;
+
+  LifeOutput(const Puzzle *puzzle, const Puzzle::Input *input)
+    : Puzzle::Output(puzzle, input)
+  {}
+
+  LifeOutput(std::string format, std::string name, PersistContext &ctxt)
+    : Puzzle::Output(format, name, ctxt)
   {
-  protected:
+    PersistImpl(ctxt);
+  }
 
-    bool update(int n, const std::vector<bool> &curr, int x, int y) const
-    {
-      int neighbours=0;
-      for(int dx=-1;dx<=+1;dx++){
-        for(int dy=-1;dy<=+1;dy++){
-          int ox=(n+x+dx)%n; // handle wrap-around
-          int oy=(n+y+dy)%n;
+  virtual void PersistImpl(PersistContext &conn) override
+  {
+    conn.SendOrRecv(state);
+  }
 
-          if(curr.at(oy*n+ox) && !(dx==0 && dy==0))
-            neighbours++;
-        }
-      }
+  virtual bool Equals(const Output *output) const override
+  {
+    auto pOutput = As<LifeOutput>(output);
+    return state == pOutput->state;
+  }
 
-      if(curr[n*y+x]){
-        // alive
-        if(neighbours<2){
-          return false;
-        }else if(neighbours>3){
-          return false;
-        }else{
-          return true;
-        }
-      }else{
-        // dead
-        if(neighbours==3){
-          return true;
-        }else{
-          return false;
-        }
+};
+
+
+class LifePuzzle
+  : public PuzzleBase<LifeInput, LifeOutput>
+{
+protected:
+
+  bool update(int n, const std::vector<bool> &curr, int x, int y) const
+  {
+    int neighbours = 0;
+    for (int dx = -1; dx <= +1; dx++) {
+      for (int dy = -1; dy <= +1; dy++) {
+        int ox = (n + x + dx) % n; // handle wrap-around
+        int oy = (n + y + dy) % n;
+
+        if (curr.at(oy * n + ox) && !(dx == 0 && dy == 0))
+          neighbours++;
       }
     }
 
-  protected:
-    virtual void Execute(
-			 ILog *log,
-			 const LifeInput *input,
-			 LifeOutput *output
-			 ) const =0;
+    if (curr[n * y + x]) {
+      // alive
+      if (neighbours < 2) {
+        return false;
+      } else if (neighbours > 3) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      // dead
+      if (neighbours == 3) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
 
-    void ReferenceExecute(
-			  ILog *log,
-			  const LifeInput *pInput,
-			  LifeOutput *pOutput
-			  ) const
-    {
-      log->LogVerbose("About to start running iterations (total = %d)", pInput->steps);
+protected:
+  virtual void Execute(
+    ILog *log,
+    const LifeInput *input,
+    LifeOutput *output
+  ) const = 0;
 
-      unsigned n=pInput->n;
-      std::vector<bool> state=pInput->state;
+  void ReferenceExecute(
+    ILog *log,
+    const LifeInput *pInput,
+    LifeOutput *pOutput
+  ) const
+  {
+    log->LogVerbose("About to start running iterations (total = %d)", pInput->steps);
 
-      log->Log(Log_Debug, [&](std::ostream &dst){
-	  dst<<"\n";
-	  for(unsigned y=0; y<n; y++){
-	    for(unsigned x=0; x<n; x++){
-	      dst<<(state.at(y*n+x)?'x':' ');
-	    }
-	    dst<<"\n";
-	  }
-	});
+    unsigned n = pInput->n;
+    std::vector<bool> state = pInput->state;
 
-      for(unsigned i=0; i<pInput->steps; i++){
-        log->LogVerbose("Starting iteration %d of %d\n", i, pInput->steps);
+    log->Log(Log_Debug, [&](std::ostream & dst) {
+      dst << "\n";
+      for (unsigned y = 0; y < n; y++) {
+        for (unsigned x = 0; x < n; x++) {
+          dst << (state.at(y * n + x) ? 'x' : ' ');
+        }
+        dst << "\n";
+      }
+    });
 
-        std::vector<bool> next(n*n);
+    for (unsigned i = 0; i < pInput->steps; i++) {
+      log->LogVerbose("Starting iteration %d of %d\n", i, pInput->steps);
 
-        for(unsigned x=0; x<n; x++){
-          for(unsigned y=0; y<n; y++){
-            next[y*n+x]=update(n, state, x, y);
+      std::vector<bool> next(n * n);
+
+      for (unsigned x = 0; x < n; x++) {
+        for (unsigned y = 0; y < n; y++) {
+          next[y * n + x] = update(n, state, x, y);
+        }
+      }
+
+      state = next;
+
+      // The weird form of log is so that there is little overhead
+      // if logging is disabled
+      log->Log(Log_Debug, [&](std::ostream & dst) {
+        dst << "\n";
+        for (unsigned y = 0; y < n; y++) {
+          for (unsigned x = 0; x < n; x++) {
+            dst << (state[y * n + x] ? 'x' : ' ');
           }
+          dst << "\n";
         }
-
-        state=next;
-
-        // The weird form of log is so that there is little overhead
-        // if logging is disabled
-        log->Log(Log_Debug, [&](std::ostream &dst){
-	    dst<<"\n";
-	    for(unsigned y=0; y<n; y++){
-	      for(unsigned x=0; x<n; x++){
-		dst<<(state[y*n+x]?'x':' ');
-	      }
-	      dst<<"\n";
-	    }
-	  });
-      }
-
-      log->LogVerbose("Finished steps");
-
-      pOutput->state=state;
+      });
     }
 
-  public:
-    virtual std::string Name() const override
-    { return "life"; }
+    log->LogVerbose("Finished steps");
 
-    virtual std::shared_ptr<Input> CreateInput(
-					       ILog *,
-					       int scale
-					       ) const override
-    {
-      std::mt19937 rnd(time(0));  // Not the best way of seeding...
+    pOutput->state = state;
+  }
 
-      auto params=std::make_shared<LifeInput>(this, scale);
+public:
+  virtual std::string Name() const override
+  { return "life"; }
 
-      params->n=scale;
-      params->steps=scale;
+  virtual std::shared_ptr<Input> CreateInput(
+    ILog *,
+    int scale
+  ) const override
+  {
+    std::mt19937 rnd(time(0));  // Not the best way of seeding...
 
-      int n=scale;
-      params->state.resize(n*n);
-      for(unsigned i=0; i<n*n; i++){
-        params->state[i]=(rnd()%2)==1;
-      }
+    auto params = std::make_shared<LifeInput>(this, scale);
 
-      return params;
+    params->n = scale;
+    params->steps = scale;
+
+    int n = scale;
+    params->state.resize(n * n);
+    for (unsigned i = 0; i < n * n; i++) {
+      params->state[i] = (rnd() % 2) == 1;
     }
 
-  };
+    return params;
+  }
+
+};
 
 };
 
