@@ -19,9 +19,22 @@ public:
 		       ) const override {
     log->LogVerbose("About to start running iterations (total = %d)", input->steps);
 
+    int K;
+
+    char *v=getenv("HPCE_LIFE_CHUNKSIZE_K");
+    if(v==NULL){
+      K = 16;
+      log->LogInfo("No HPCE_LIFE_CHUNKSIZE_K envrionment variable found");
+        // printf("HPCE_FFT_LOOP_K not set. Using a size of %i instead.\n", chunk_size);
+    }else{
+      K = atoi(v);
+      log->LogInfo("HPCE_LIFE_CHUNKSIZE_K environment variable found");
+        // printf("Using a chunk size of %i (set in the environment variable 'HPCE_FFT_LOOP_K'.\n)", chunk_size);
+    }
+    log->LogInfo("Chunksize set as K=%i", K);
     unsigned n=input->n;
     // std::vector<bool> state=input->state;
-  std::vector<int> state(input->state.begin(), input->state.end());
+    std::vector<int> state(input->state.begin(), input->state.end());
 
     log->Log(puzzler::Log_Debug, [&](std::ostream &dst){
       dst<<"\n";
@@ -38,14 +51,20 @@ public:
 
       std::vector<int> next(n*n);
 
-      auto impl = [&](int x){
-        for(unsigned y=0; y<n; y++){
-          next[y*n+x]=int_update(n, state, x, y);
+      typedef tbb::blocked_range<unsigned> my_range_t;
+      my_range_t range(0, n, K);
+
+      auto impl = [&](const my_range_t &chunk){
+        for(unsigned x=chunk.begin(); x!=chunk.end(); x++ ){
+          for(unsigned y=0; y<n; y++){
+            next[y*n+x]=int_update(n, state, x, y);
+          }
         }
       };
 
-      tbb::parallel_for <size_t> (0, n, impl);
-
+      // tbb::parallel_for <size_t> (0, n, impl);
+      tbb::parallel_for(range, impl, tbb::simple_partitioner());
+      
       state = next;
 
       // The weird form of log is so that there is little overhead
