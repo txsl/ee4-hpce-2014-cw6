@@ -3,6 +3,9 @@
 
 #include "tbb/parallel_for.h"
 
+#define __CL_ENABLE_EXCEPTIONS 
+#include "CL/cl.hpp"
+
 #include "puzzler/puzzles/life.hpp"
 
 class LifeProvider
