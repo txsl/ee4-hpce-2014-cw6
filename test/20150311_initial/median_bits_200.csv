@@ -1,0 +1,13 @@
+LogLevel = 2 -> 2
+[run_puzzle], 1426538627.63, 2, Created log.
+[run_puzzle], 1426538627.63, 2, Creating random input
+[run_puzzle], 1426538627.63, 2, Executing puzzle
+[run_puzzle], 1426538627.63, 2, Generating bits.
+[run_puzzle], 1426538627.63, 2, Finding median, delta=816640
+[run_puzzle], 1426538627.63, 2, Done, median=2062325706 (0.480173), delta=13568
+[run_puzzle], 1426538627.63, 2, Executing reference
+[run_puzzle], 1426538627.63, 2, Generating bits.
+[run_puzzle], 1426538627.63, 2, Finding median, delta=807424
+[run_puzzle], 1426538627.63, 2, Done, median=2062325706 (0.480173), delta=6912
+[run_puzzle], 1426538627.63, 2, Checking output
+[run_puzzle], 1426538627.63, 2, Output is correct
