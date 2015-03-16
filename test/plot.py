@@ -12,7 +12,7 @@ dirname = sys.argv[1]
 
 # Not currently the neatest of files..
 
-methods = ["circuit_sim", "life", "matrix_exponent", "option_explicit", "string_search"]
+methods = ["circuit_sim", "life", "matrix_exponent", "option_explicit", "string_search", "median_bits"]
 sizes = range(100, 1100, 100)
 
 
