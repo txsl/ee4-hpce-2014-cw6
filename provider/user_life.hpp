@@ -103,15 +103,12 @@ public:
       cl::CommandQueue queue(opencl.getContext(), opencl.getDevice());
 
       size_t cbBuffer = n*n*sizeof(int);
-      log->LogVerbose("cbBuffer=%i, sizeof(int)=%i", cbBuffer, sizeof(int));
 
-      // cl::Buffer buffN(opencl.getContext(), CL_MEM_READ_ONLY, sizeof(int));
       cl::Buffer buffCurr(opencl.getContext(), CL_MEM_READ_WRITE, cbBuffer);
       cl::Buffer buffNext(opencl.getContext(), CL_MEM_READ_WRITE, cbBuffer);
 
       kernel.setArg(0, n);
 
-      // queue.enqueueWriteBuffer(buffN, CL_TRUE, 0, sizeof(n), n);
       queue.enqueueWriteBuffer(buffCurr, CL_FALSE, 0, cbBuffer, &state[0], NULL);
 
       for(int t=0; t<n; t++)
@@ -129,9 +126,6 @@ public:
         cl::NDRange globalSize(n, n);
         cl::NDRange localSize = cl::NullRange;
 
-        // std::vector<cl::Event> kernelDependencies(1, evCopiedState);
-        // cl::Event evExecutedKernel;
-
         queue.enqueueNDRangeKernel(kernel, offset, globalSize, localSize); //, &kernelDependencies, &evExecutedKernel);
         
         log->LogVerbose("Enqueue range set");
@@ -142,21 +136,9 @@ public:
 
         std::swap(buffCurr, buffNext);
 
-        
-        // log->LogInfo("Before copying back");
-        // log->LogInfo("%i in state, %i in next", state.size(), next.size());
-        // log->LogInfo("%i in state, %i in next", sizeof(state), sizeof(next));
-
-        // std::vector<cl::Event> copyBackDependencies(1, evExecutedKernel);
-        // queue.enqueueReadBuffer(buffNext, CL_TRUE, 0, cbBuffer, &next[0], &copyBackDependencies);
-        
-        // log->LogInfo("After copying back");
-        
-        // std::swap(state, next);
-
       }
       
-      queue.enqueueReadBuffer(buffNext, CL_TRUE, 0, cbBuffer, &state[0]);
+      queue.enqueueReadBuffer(buffCurr, CL_TRUE, 0, cbBuffer, &state[0]);
     
     }
 
