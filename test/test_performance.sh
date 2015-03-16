@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-PUZZLES="circuit_sim life matrix_exponent option_explicit string_search";
+PUZZLES="circuit_sim life matrix_exponent option_explicit string_search median_bits";
 
 SCALES="100 200 300 400 500 600 700 800 900 1000";
 
