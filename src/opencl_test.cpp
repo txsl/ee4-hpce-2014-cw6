@@ -2,7 +2,7 @@
 #include "puzzler/puzzler.hpp"
 
 #include <iostream>
-#include "opencl_frame.hpp"
+#include "../provider/opencl_frame.hpp"
 
 int main()
 {
