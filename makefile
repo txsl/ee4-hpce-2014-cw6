@@ -2,11 +2,10 @@ SHELL=/bin/bash
 
 CPPFLAGS += -std=c++11 -W -Wall  -g
 CPPFLAGS += -O3
-CPPFLAGS += -I include -I provider
+CPPFLAGS += -I include
 
-CPPFLAGS += -I opencl_sdk/include/
+CPPFLAGS += -isystem opencl_sdk/include/
 
-# TBB_DIR = /usr/local/Cellar/tbb/4.3-20141023
 TBB_DIR = $(shell pwd)/tbb42_20140601oss
 TBB_INC_DIR = $(TBB_DIR)/include
 TBB_LIB_DIR = $(TBB_DIR)/lib

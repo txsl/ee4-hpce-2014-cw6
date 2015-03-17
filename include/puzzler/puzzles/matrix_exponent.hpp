@@ -112,6 +112,7 @@ protected:
     return res;
   }
 
+
   static std::vector<uint32_t> MatrixMul(unsigned n, std::vector<uint32_t> a, std::vector<uint32_t> b)
   {
     std::vector<uint32_t> res(n * n, 0);
@@ -119,6 +120,7 @@ protected:
     for (unsigned r = 0; r < n; r++) {
       for (unsigned c = 0; c < n; c++) {
         for (unsigned i = 0; i < n; i++) {
+          // Hat tip to @reginalio - https://github.com/HPCE/hpce_2014_cw6/issues/4
           res[r * n + c] = Add(res[r * n + c], Mul(a[r * n + i], b[i * n + r]));
         }
       }
@@ -126,6 +128,7 @@ protected:
     return res;
   }
 
+  
   void ReferenceExecute(
     ILog *log,
     const MatrixExponentInput *pInput,

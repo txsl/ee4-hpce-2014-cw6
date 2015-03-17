@@ -147,7 +147,6 @@ public:
 
   std::string LoadSource(const char *fileName)
   {
-      // Don't forget to change your_login here
     std::string baseDir="provider";
     if(getenv("HPCE_CL_SRC_DIR")){
       baseDir=getenv("HPCE_CL_SRC_DIR");
@@ -155,12 +154,10 @@ public:
 
     std::string fullName=baseDir+"/"+fileName;
 
-    // Open a read-only binary stream over the file
     std::ifstream src(fullName, std::ios::in | std::ios::binary);
     if(!src.is_open())
       throw std::runtime_error("LoadSource : Couldn't load cl file from '"+fullName+"'.");
 
-    // Read all characters of the file into a string
     return std::string(
       (std::istreambuf_iterator<char>(src)), // Node the extra brackets.
       std::istreambuf_iterator<char>()
