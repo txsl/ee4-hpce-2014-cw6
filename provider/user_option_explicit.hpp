@@ -76,22 +76,59 @@ public:
     //   state[n - i] = std::max(local_vD - pInput->K, 0.0);
     // }
 
+    typedef tbb::blocked_range<unsigned> my_range_t;
+    my_range_t inner_range(0, n, K);
+
     double wU = pInput->wU, wD = pInput->wD, wM = pInput->wM;
+
     for (int t = n - 1; t >= 0; t--) {
       std::vector<double> tmp = state;
 
-      vU = pInput->S0, vD = pInput->S0;
-      for (int i = 0; i < n; i++) {
-        double vCU = wU * state[n + i + 1] + wM * state[n + i] + wD * state[n + i - 1];
-        double vCD = wU * state[n - i + 1] + wM * state[n - i] + wD * state[n - i - 1];
-        vCU = std::max(vCU, vU - pInput->K);
-        vCD = std::max(vCD, vD - pInput->K);
-        tmp[n + i] = vCU;
-        tmp[n - i] = vCD;
+      // vU = pInput->S0, vD = pInput->S0;
 
-        vU = vU * u;
-        vD = vD * d;
-      }
+      auto inner_impl = [&](const my_range_t &chunk)
+      {
+
+        double local_vU = vU * pow(u, chunk.begin());
+        double local_vD = vD * pow(d, chunk.begin());
+
+        for(int i=chunk.begin(); i < chunk.end(); i++)
+        {
+
+          double vCU = wU * state[n + i + 1] + wM * state[n + i] + wD * state[n + i - 1];
+          double vCD = wU * state[n - i + 1] + wM * state[n - i] + wD * state[n - i - 1];
+          
+          vCU = std::max(vCU, local_vU - pInput->K);
+          vCD = std::max(vCD, local_vD - pInput->K);
+          
+          tmp[n + i] = vCU;
+          tmp[n - i] = vCD;
+
+          local_vU = local_vU * u;
+          local_vD = local_vD * d;
+
+        }
+      };
+
+      tbb::parallel_for(inner_range, inner_impl, tbb::simple_partitioner());
+      
+      // double local_vU, local_vD;
+
+      // for (int i = 0; i < n; i++) {
+
+      //   local_vU = vU * pow(u, i);
+      //   local_vD = vD * pow(d, i);
+
+      //   double vCU = wU * state[n + i + 1] + wM * state[n + i] + wD * state[n + i - 1];
+      //   double vCD = wU * state[n - i + 1] + wM * state[n - i] + wD * state[n - i - 1];
+      //   vCU = std::max(vCU, local_vU - pInput->K);
+      //   vCD = std::max(vCD, local_vD - pInput->K);
+      //   tmp[n + i] = vCU;
+      //   tmp[n - i] = vCD;
+
+      //   // vU = vU * u;
+      //   // vD = vD * d;
+      // }
 
       state = tmp;
     }
