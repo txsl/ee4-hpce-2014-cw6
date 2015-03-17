@@ -11,31 +11,6 @@ class CircuitSimProvider
   : public puzzler::CircuitSimPuzzle
 {
 protected:
-
-  // bool calcSrc(int depth, puzzler::ILog *log, unsigned src, const std::vector<bool> &state, const puzzler::CircuitSimInput *input) const
-  // {
-  //   if (src < input->flipFlopCount) {
-  //     log->LogVerbose("  %i returning path1 %i", depth, (int)state.at(src));
-  //     return state.at(src);
-  //   } else {
-  //     unsigned nandSrc = src - input->flipFlopCount;
-  //     bool a = calcSrc(depth+1, log, input->nandGateInputs.at(nandSrc).first, state, input);
-  //     bool b = calcSrc(depth+1, log, input->nandGateInputs.at(nandSrc).second, state, input);
-  //     log->LogVerbose("  %i returning path2 %i", depth, !(a && b));
-  //     return !(a && b);
-  //   }
-  // }
-
-  // std::vector<bool> next(puzzler::ILog *log, const std::vector<bool> &state, const puzzler::CircuitSimInput *input) const
-  // {
-  //   std::vector<bool> res(state.size());
-  //   for (unsigned i = 0; i < res.size(); i++) {
-  //     log->LogVerbose("Calling for %i - calcSrc with %i, state and input", i, input->flipFlopInputs[i]);
-  //     res[i] = calcSrc(0, log, input->flipFlopInputs[i], state, input);
-  //   }
-  //   return res;
-  // }
-
   std::vector<bool> tbb_next(const std::vector<bool> &state, const puzzler::CircuitSimInput *input) const
   {
     std::vector<bool> res(state.size());
