@@ -6,3 +6,7 @@
 *.in
 *.ref
 *.got
+
+*.tar.gz
+
+test/aws_ref

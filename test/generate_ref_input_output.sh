@@ -1,20 +1,20 @@
 #!/bin/bash
 
-PUZZLES="circuit_sim life matrix_exponent option_explicit string_search median_bits"
-
-# SCALES="100 200 300 400 500 600 700 800 900 1000"
-LARGE_LOG_SCALES="1 5 10 50 100 500 1000 5000 10000 50000 100000 500000 1000000"
-SMALL_LOG_SCALES="1 5 10 50 100 500 1000"
-
-LOG_LEVEL=2;
-
 echo "Starting reference script - Generates input and reference output, with timings"
+
+source common.sh
 
 # http://stackoverflow.com/questions/6482377/bash-shell-script-check-input-argument
 if [ -z "$1" ]
   then
     echo "No output directory argument supplied. Exiting."
     exit 2
+fi
+
+if [ ! -z "$2" ]
+    then
+    echo "Specific puzzle ${2} being tested (only)"
+    PUZZLES=$2
 fi
 
 # thanks http://www.cyberciti.biz/tips/linux-unix-pause-command.html
@@ -26,7 +26,11 @@ mkdir -p $1/log
 for puz in $PUZZLES; do
 
     if [ $puz == "matrix_exponent" ]; then
-        log_scales=$SMALL_LOG_SCALES
+        log_scales=$MATRIX_EXPONENT_LOG_SCALES
+    elif [ $puz == "circuit_sim" ]; then
+        log_scales=$CIRCUIT_SIM_LOG_SCALES
+    elif [ $puz == "life" ]; then
+        log_scales=$LIFE_LOG_SCALES
     else
         log_scales=$LARGE_LOG_SCALES
     fi
