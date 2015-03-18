@@ -14,7 +14,7 @@ fi
 if [ ! -z "$2" ]
     then
     echo "Specific puzzle ${2} being tested (only)"
-    PUZZLES=$3
+    PUZZLES=$2
 fi
 
 # thanks http://www.cyberciti.biz/tips/linux-unix-pause-command.html
