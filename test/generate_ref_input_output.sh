@@ -11,6 +11,12 @@ if [ -z "$1" ]
     exit 2
 fi
 
+if [ ! -z "$2" ]
+    then
+    echo "Specific puzzle ${2} being tested (only)"
+    PUZZLES=$3
+fi
+
 # thanks http://www.cyberciti.biz/tips/linux-unix-pause-command.html
 read -p "Ensure this is being run from the 'test' directory. Hit [enter] to continue..."
 
