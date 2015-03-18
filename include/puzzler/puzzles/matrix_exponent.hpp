@@ -120,9 +120,6 @@ protected:
     for (unsigned r = 0; r < n; r++) {
       for (unsigned c = 0; c < n; c++) {
         for (unsigned i = 0; i < n; i++) {
-          // if (r == 0 && c == 0) {
-          //   fprintf(stderr, "Doing a[%i] (%i) * b[%i] (%i) = %i. Total is now %i\n", r * n + i, a[r * n + i], i * n + r, b[i * n + r], Mul(a[r * n + i], b[i * n + r]), Add(res[r * n + c], Mul(a[r * n + i], b[i * n + r])));
-          // }
           // Hat tip to @reginalio - https://github.com/HPCE/hpce_2014_cw6/issues/4
           res[r * n + c] = Add(res[r * n + c], Mul(a[r * n + i], b[i * n + r]));
         }
@@ -138,53 +135,21 @@ protected:
     MatrixExponentOutput *pOutput
   ) const override final
   {
-
     std::vector<uint32_t> hash(pInput->steps);
 
     log->LogVerbose("Setting up A and identity");
     auto A = MatrixCreate(pInput->n, pInput->seed);
     auto acc = MatrixIdentity(pInput->n);
 
-
-// log->Log(puzzler::Log_Debug, [&](std::ostream & dst) {
-//   dst << "Printing matrix A";
-//   for (unsigned i = 0; i < pInput->n; i++) {
-//     dst << std::endl;
-//     for (unsigned j = 0; j < pInput->n; j++) {
-//       dst << A[i*pInput->n + j] << " ";
-//     }
-//   }
-// });
-
     log->LogVerbose("Beginning multiplication");
     hash[0] = acc[0];
     for (unsigned i = 1; i < pInput->steps; i++) {
-// if (i==2) {
-// log->Log(puzzler::Log_Debug, [&](std::ostream & dst) {
-//   dst << "Printing matrix acc";
-//   for (unsigned i = 0; i < pInput->n; i++) {
-//     dst << std::endl;
-//     for (unsigned j = 0; j < pInput->n; j++) {
-//       dst << acc[i*pInput->n + j] << " ";
-//     }
-//   }
-// });
-// }
       log->LogDebug("Iteration %d", i);
       acc = MatrixMul(pInput->n, acc, A);
       hash[i] = acc[0];
     }
 
-    // log->Log(puzzler::Log_Debug, [&](std::ostream & dst) {
-    //   dst << "Printing matrix hash";
-    //   dst << std::endl;
-    //   for (unsigned i = 0; i < pInput->steps; i++) {
-    //     dst << hash[i] << " ";
-    //   }
-    // });
-
     log->LogVerbose("Done");
-
     pOutput->hashes = hash;
   }
 
