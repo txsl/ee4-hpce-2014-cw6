@@ -29,7 +29,20 @@ public:
     double vU = pInput->S0, vD = pInput->S0;
     state[pInput->n] = std::max(vU - pInput->K, 0.0);
     
-    int K = 16;
+    int K;
+    char *v;
+
+    v=getenv("HPCE_CHUNKSIZE_K");
+    if(v==NULL){
+      K = 16;
+      log->LogInfo("No HPCE_CHUNKSIZE_K envrionment variable found");
+        // printf("HPCE_FFT_LOOP_K not set. Using a size of %i instead.\n", chunk_size);
+    }else{
+      K = atoi(v);
+      log->LogInfo("HPCE_CHUNKSIZE_K environment variable found");
+        // printf("Using a chunk size of %i (set in the environment variable 'HPCE_FFT_LOOP_K'.\n)", chunk_size);
+    }
+    log->LogInfo("Chunksize set as K=%i", K);
 
     typedef tbb::blocked_range<unsigned> my_range_t;
     my_range_t range(1, n+1, K);
