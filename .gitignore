@@ -8,5 +8,6 @@
 *.got
 
 *.tar.gz
+*.pyc
 
 test/aws_ref
