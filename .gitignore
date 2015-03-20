@@ -7,6 +7,7 @@
 *.ref
 *.got
 
-*.tar.gz
+*ref*.tar.gz
 
 test/aws_ref
+test/doc_ray_ref
