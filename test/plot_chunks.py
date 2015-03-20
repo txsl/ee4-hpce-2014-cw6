@@ -22,62 +22,55 @@ CHUNK_SIZES = [2, 16, 128, 512, 1024, 4096, 16384]
 for m in methods:
     legend = []
     size = []
-    # time = []
-    # test_output = []
-    # results = dict.fromkeys(CHUNK_SIZES, [])
-    results = {}
+
+    results = dict.fromkeys(CHUNK_SIZES, list())
+    scales = dict.fromkeys(CHUNK_SIZES, list())
     
     for c in CHUNK_SIZES:
         results[c] = []
+        scales[c] = []
 
     results['ref'] = []
+    scales['ref'] = []
 
     if m in opencl:
         results['cl'] = []
+        scales['cl'] = []
 
     for size in SCALE_MAPPING[m]:
-        results['ref'].append(get_ref_time(m, size, ref_dir))
+
+        time = get_ref_time(m, size, ref_dir)
+        # print time
+        
+        if time is not None:
+            results['ref'].append(time)
+            scales['ref'].append(size)
 
         for c in CHUNK_SIZES:
-            # print c, get_test_time_chunk(m, size, c, test_dir)
-            # print len(results)
-            # print c, results[c], type(results[c]), type(results)
-            results[c].append(get_test_time_chunk(m, size, c, test_dir))
+            time = get_test_time_chunk(m, size, c, test_dir)
+            
+            if time:
+                results[c].append(time)
+                scales[c].append(size)
 
         if m in opencl:
-            results['cl'].append(get_test_time_chunk(m, size, None, test_dir, True))
-    # for 
+            time = get_test_time_chunk(m, size, None, test_dir, True)
+            results['cl'].append(time)
+            scales['cl'].append(size)
 
-    # for s in sizes:
 
-    # print results
-       
-    #     else:
-    #         size.append(s)
-    #         ref_output.append(ref_time)
-    #         print m, s, ref_time/60
-    #         test_output.append(test_time)
-
-    # print 'size:', size, len(size)
-    # print 'ref_output:', ref_output, len(ref_output)
-    # print 'test_output:', test_output, len(test_output)
     for c in CHUNK_SIZES:
-        print  c, results[c]
-        # print 'scale', SCALE_MAPPING[m]
-        plt.plot(SCALE_MAPPING[m], results[c], marker='o')
+        plt.plot(scales[c], results[c], marker='o')
         legend.append("Chunksize K={}".format(c))
 
-    plt.plot(SCALE_MAPPING[m], results['ref'], marker='o')
-    print 'ref', results['ref']
+
+    plt.plot(scales['ref'], results['ref'], marker='o')
+
     legend.append("Reference Code")    
 
     if m in opencl:
-        print 'cl', results['cl']
-        plt.plot(SCALE_MAPPING[m], results['cl'], marker='o')
+        plt.plot(scales['cl'], results['cl'], marker='o')
         legend.append("OpenCL")
-
-    # plt.plot(size, test_output)
-    # legend.append("Test output")
 
     plt.yscale('log')
     plt.xscale('log')
@@ -86,6 +79,6 @@ for m in methods:
     plt.xlabel('Problem Size')
     plt.ylabel('Execution time (seconds)')
 
-    plt.legend(legend, loc='lower right')
+    plt.legend(legend, loc='upper left')
     plt.show()
 

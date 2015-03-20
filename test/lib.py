@@ -24,26 +24,20 @@ def get_ref_time(puzzle, size, dirname):
             
             elif row[3] == ' Finished reference':
                 ref_time = float(row[1]) - start_test
-                # test_time = start_ref_time - start_test
-    if ref_time <= 0.001:
-        ref_time = 0.01
+
+    # Correction to floats 
+    if ref_time < 0.01:
+        ref_time = 0.00
 
     return ref_time         
-            # elif row[3] == ' Checking output':
-            #     ref_time = float(row[1]) - start_ref_time
 
-            # elif row[3] == ' Output is correct':
-            #     good_output = True
-
-    # if not good_output:
-    #     print "TEST DID NOT PASS! Puzzle: {0} Size: {1}".format(m, s)
 def test_passed(filename):
     
     try:
         with open(filename, "r") as csvfile:
             reader = csv.reader(csvfile)
             for idx, row in enumerate(reader):
-                # print row
+
                 if idx == 0:
                     continue
 
@@ -69,6 +63,7 @@ def get_test_time(filename):
 
     if ref_time <= 0.001:
         ref_time = 0.01
+
     return ref_time
 
 def get_test_time_chunk(puzzle, size, chunksize, dirname, cl=False):
