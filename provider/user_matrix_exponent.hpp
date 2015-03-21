@@ -43,8 +43,8 @@ public:
     puzzler::MatrixExponentOutput *output
   ) const override {
     std::vector<uint32_t> hash(input->steps);
-
-
+    size_t cbBufferMatrix = input->n*input->n*sizeof(uint32_t);
+    size_t cbBufferVector =          input->n*sizeof(uint32_t);
 
 
 
@@ -55,54 +55,33 @@ public:
     if (input->steps < 2) return;
     hash[1] = acc[0];
 
-
-
-
-
-
-
     puzzler::OpenclHelper opencl(log);
     opencl.selectPlatform().selectDevice().makeContext();
     opencl.build("matrix_exponent_kernel.cl");
 
     cl::CommandQueue queue(opencl.getContext(), opencl.getDevice());
-    size_t cbBufferMatrix = input->n*input->n*sizeof(uint32_t);
-    size_t cbBufferVector =          input->n*sizeof(uint32_t);
+    
     cl::Buffer buffCurrMatrix(opencl.getContext(), CL_MEM_READ_WRITE, cbBufferMatrix);
     cl::Buffer buffCurrVector(opencl.getContext(), CL_MEM_READ_WRITE, cbBufferVector);
     cl::Buffer buffNextVector(opencl.getContext(), CL_MEM_READ_WRITE, cbBufferVector);
-
-    queue.enqueueWriteBuffer(buffCurrMatrix, CL_TRUE, 0, cbBufferMatrix, &A[0], NULL);
-    queue.enqueueWriteBuffer(buffCurrVector, CL_TRUE, 0, cbBufferVector, &acc[0], NULL);
-
-    cl::Kernel kernel(opencl.getProgram(), "matrix_multiply");
-
-    kernel.setArg(1, buffCurrMatrix);
-    
     cl::NDRange offset(0);
     cl::NDRange globalSize(input->n);
     cl::NDRange localSize = cl::NullRange;
 
-    log->LogDebug("Iteration 1");
-    fprintf(stderr, "%i\n", acc[0]);
-
+    cl::Kernel kernel(opencl.getProgram(), "matrix_multiply");
+    queue.enqueueWriteBuffer(buffCurrMatrix, CL_TRUE, 0, cbBufferMatrix, &A[0], NULL);
+    queue.enqueueWriteBuffer(buffCurrVector, CL_TRUE, 0, cbBufferVector, &acc[0], NULL);
+    kernel.setArg(1, buffCurrMatrix);
 
     log->LogVerbose("Beginning multiplication - Smart Way");
     for (unsigned i = 2; i < input->steps; i++) {
       log->LogDebug("Iteration %d", i);
-
       kernel.setArg(0, buffCurrVector);
       kernel.setArg(2, buffNextVector);
 
       queue.enqueueNDRangeKernel(kernel, offset, globalSize, localSize); //, &kernelDependencies, &evExecutedKernel);
       queue.enqueueBarrier();
-
-      queue.enqueueReadBuffer(buffNextVector, CL_TRUE, 0, 2*sizeof(uint32_t), &acc[0]);
-      hash[i] = acc[0];
-
-      // acc = MatrixSpecialMul(input->n, acc, A);
-      fprintf(stderr, "%i\n", acc[0]);
-    
+      queue.enqueueReadBuffer(buffNextVector, CL_TRUE, 0, sizeof(uint32_t), &hash[i]);
 
       std::swap(buffCurrVector, buffNextVector);
     }
