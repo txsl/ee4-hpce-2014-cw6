@@ -103,9 +103,7 @@ public:
       cl::NDRange globalSize(n, n);
       cl::NDRange localSize = cl::NullRange;
 
-
-        
-      for (int t = 0; t < n; t++) {
+      for (unsigned t = 0; t < n; t++) {
         log->LogVerbose("On iteration %i. n=%i", t, n);
 
         kernel.setArg(1, buffCurr);
