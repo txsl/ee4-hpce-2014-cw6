@@ -19,12 +19,12 @@ public:
   const override {
     pLog->LogInfo("Generating bits.");
     double tic = puzzler::now();
-
     std::vector<uint32_t> temp(input->n);
+    if (input->n < 4) {
+      // strangeness happens when running tbb with small values. let's fallback.
+      ReferenceExecute(pLog, input, output); return;
+    }
 
-    // for (unsigned n = 0; n < 100; n++) {
-    //   pLog->LogInfo("Result for n=%i is %i", n, (unsigned)(log(16 + n) / log(1.1)));
-    // }
 
     char *v = getenv("HPCE_CHUNKSIZE_K");;
     int K = 16;
@@ -61,12 +61,10 @@ public:
     pLog->LogInfo("Finding median, delta=%lg", puzzler::now() - tic);
     tic = puzzler::now();
 
-
     // this is Nlog(N) - I doubt this can be improved.
     std::sort(temp.begin(), temp.end());
 
     output->median = temp[temp.size() / 2];
-
     pLog->LogInfo("Done, median=%u (%lg), delta=%lg", output->median, output->median / pow(2.0, 32), puzzler::now() - tic);
   }
 
