@@ -15,7 +15,7 @@ public:
     puzzler::ILog *pLog,
     const puzzler::MedianBitsInput *input,
     puzzler::MedianBitsOutput *output
-    )
+  )
   const override {
     pLog->LogInfo("Generating bits.");
     double tic = puzzler::now();
@@ -26,28 +26,20 @@ public:
     //   pLog->LogInfo("Result for n=%i is %i", n, (unsigned)(log(16 + n) / log(1.1)));
     // }
 
-    char *v;
-    int K;
-
-    v=getenv("HPCE_CHUNKSIZE_K");
-
-    if(v==NULL){
-      K = 16;
-      pLog->LogInfo("No HPCE_CHUNKSIZE_K envrionment variable found");
-        // printf("HPCE_FFT_LOOP_K not set. Using a size of %i instead.\n", chunk_size);
-    }else{
+    char *v = getenv("HPCE_CHUNKSIZE_K");;
+    int K = 16;
+    if ( v == NULL ) {
+      pLog->LogInfo("No HPCE_CHUNKSIZE_K envrionment variable found, default is 16");
+    } else {
       K = atoi(v);
-      pLog->LogInfo("HPCE_CHUNKSIZE_K environment variable found");
-        // printf("Using a chunk size of %i (set in the environment variable 'HPCE_FFT_LOOP_K'.\n)", chunk_size);
+      pLog->LogInfo("HPCE_CHUNKSIZE_K environment variable found, set to %i", K);
     }
-    pLog->LogInfo("Chunksize set as K=%i", K);
-
 
     typedef tbb::blocked_range<unsigned> my_range_t;
-    my_range_t range(0,input->n,ceil(input->n/4));
+    my_range_t range(0, input->n, K);
 
-    auto f=[&](const my_range_t &chunk){
-      uint32_t x,y,z,w;
+    auto f = [&](const my_range_t &chunk) {
+      uint32_t x, y, z, w;
 
       for (unsigned i = chunk.begin(); i < chunk.end(); i++) {
         x = i * (7 + input->seed);
@@ -64,7 +56,7 @@ public:
         temp[i] = w;
       }
     };
-    tbb::parallel_for(range, f, tbb::simple_partitioner()); 
+    tbb::parallel_for(range, f, tbb::simple_partitioner());
 
     pLog->LogInfo("Finding median, delta=%lg", puzzler::now() - tic);
     tic = puzzler::now();
