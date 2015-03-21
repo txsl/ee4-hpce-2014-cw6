@@ -101,3 +101,5 @@ if [ ! "$NORM" -eq 0 ]
     done
 fi
 
+
+twitter set "@t8lim: work on `hostname` now finished"
