@@ -20,6 +20,7 @@ public:
 		       puzzler::OptionExplicitOutput *pOutput
 		       ) const override {
     // ReferenceExecute(log, input, output);
+    typedef tbb::blocked_range<unsigned> my_range_t;
     int n = pInput->n;
     double u = pInput->u, d = pInput->d;
 
@@ -38,8 +39,6 @@ public:
       log->LogInfo("HPCE_CHUNKSIZE_K environment variable found, set to %i", K);
     }
 
-    typedef tbb::blocked_range<unsigned> my_range_t;
-
     auto impl = [&](const my_range_t &chunk)
     {
       double local_vU = vU * pow(u, chunk.begin() - 1);
@@ -48,7 +47,6 @@ public:
       for (int i = chunk.begin(); i < chunk.end(); i++) {
         local_vU = local_vU * u;
         local_vD = local_vD * d;
-
         state[n + i] = std::max(local_vU - pInput->K, 0.0);
         state[n - i] = std::max(local_vD - pInput->K, 0.0);
       }
@@ -56,7 +54,6 @@ public:
     
     my_range_t range(1, n+1, K);
     tbb::parallel_for(range, impl, tbb::simple_partitioner());
-
 
 
     /* ************************************
@@ -69,18 +66,15 @@ public:
     {
       double local_vU = vU * pow(u, chunk.begin());
       double local_vD = vD * pow(d, chunk.begin());
-
       for(int i=chunk.begin(); i < chunk.end(); i++)
       {
         double vCU = wU * state[n + i + 1] + wM * state[n + i] + wD * state[n + i - 1];
         double vCD = wU * state[n - i + 1] + wM * state[n - i] + wD * state[n - i - 1];
-        
         vCU = std::max(vCU, local_vU - pInput->K);
         vCD = std::max(vCD, local_vD - pInput->K);
-        
         tmp[n + i] = vCU;
         tmp[n - i] = vCD;
-
+        
         local_vU = local_vU * u;
         local_vD = local_vD * d;
       }
@@ -96,7 +90,6 @@ public:
     pOutput->value = state[n];
 
     log->LogVerbose("Priced n=%d, S0=%lg, K=%lg, r=%lg, sigma=%lg, BU=%lg : value=%lg", n, pInput->S0, pInput->K, pInput->r, pInput->sigma, pInput->BU, pOutput->value);
-
   }
 
 };
