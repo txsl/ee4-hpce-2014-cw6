@@ -23,12 +23,12 @@ protected:
   }
 
 
-  std::vector<int> tbb_next(int chunksize, const std::vector<int> &state, const puzzler::CircuitSimInput *input) const
+  std::vector<int> tbb_next(int chunkSize, const std::vector<int> &state, const puzzler::CircuitSimInput *input) const
   {
     std::vector<int> res(state.size());
 
     typedef tbb::blocked_range<unsigned> my_range_t;
-    my_range_t range(0,res.size(),chunksize);
+    my_range_t range(0,res.size(),chunkSize);
 
     auto f=[&](const my_range_t &chunk){
       for (unsigned i = chunk.begin(); i < chunk.end(); i++) {
