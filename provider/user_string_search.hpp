@@ -20,6 +20,7 @@ public:
 
     std::string data = MakeString(input->stringLength, input->seed);
 
+    char *v;
     int K = 1;
     v = getenv("HPCE_CHUNKSIZE_K");
     if (v == NULL) {
@@ -32,15 +33,21 @@ public:
     typedef tbb::blocked_range<unsigned> my_range_t;
     my_range_t range(0, input->patterns.size(), K);
 
+    std::vector <unsigned> lens(input->patterns.size(), 0);
     unsigned i = 0;
-    while (i < input->stringLength) {
 
-      std::vector <unsigned> lens(input->patterns.size(), 0);
-
-
-      for (unsigned p = 0; p < input->patterns.size(); p++) {
+    auto impl = [&](const my_range_t &chunk){
+      for (unsigned p = chunk.begin(); p < chunk.end(); p++) {
         lens[p] = Matches(data, i, input->patterns[p]);
       }
+    };
+
+    while (i < input->stringLength) {
+
+      // thanks http://stackoverflow.com/questions/8848575/fastest-way-to-reset-every-value-of-stdvectorint-to-0
+      std::fill(lens.begin(), lens.end(), 0);
+
+      tbb::parallel_for(range, impl, tbb::simple_partitioner());
 
       for (unsigned p = 0; p < input->patterns.size(); p++) {
         if (lens[p] > 0) {
