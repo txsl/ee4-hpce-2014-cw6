@@ -34,14 +34,11 @@ public:
   }
 
 
-
-
-
-  virtual void Execute(
+  void ExecuteWithOpenCl(
     puzzler::ILog *log,
     const puzzler::MatrixExponentInput *input,
     puzzler::MatrixExponentOutput *output
-  ) const override {
+  ) const {
     std::vector<uint32_t> hash(input->steps);
     size_t cbBufferMatrix = input->n*input->n*sizeof(uint32_t);
     size_t cbBufferVector =          input->n*sizeof(uint32_t);
@@ -60,7 +57,7 @@ public:
     opencl.build("matrix_exponent_kernel.cl");
 
     cl::CommandQueue queue(opencl.getContext(), opencl.getDevice());
-    
+
     cl::Buffer buffCurrMatrix(opencl.getContext(), CL_MEM_READ_WRITE, cbBufferMatrix);
     cl::Buffer buffCurrVector(opencl.getContext(), CL_MEM_READ_WRITE, cbBufferVector);
     cl::Buffer buffNextVector(opencl.getContext(), CL_MEM_READ_WRITE, cbBufferVector);
@@ -91,13 +88,11 @@ public:
   }
 
 
-
-
-  virtual void ExecuteNoOpenCl(
+  void ExecuteNoOpenCl(
     puzzler::ILog *log,
     const puzzler::MatrixExponentInput *input,
     puzzler::MatrixExponentOutput *output
-  )  {
+  ) const {
     std::vector<uint32_t> hash(input->steps);
 
     log->LogVerbose("Setting up A and identity");
@@ -118,6 +113,31 @@ public:
     log->LogVerbose("Done");
     output->hashes = hash;
   }
+
+
+
+
+  virtual void Execute(
+    puzzler::ILog *log,
+    const puzzler::MatrixExponentInput *input,
+    puzzler::MatrixExponentOutput *output
+  ) const override {
+    char* s = getenv("HPCE_CL_ENABLE");
+    int v = 0;
+    if (s!=NULL) {
+      v = atoi(getenv("HPCE_CL_ENABLE"));
+    }
+
+    if(v==1) {
+      log->LogInfo("Running with Open CL");
+      ExecuteWithOpenCl(log, input, output);
+    } else {
+      log->LogInfo("Running without Open CL");
+      ExecuteNoOpenCl(log, input, output);
+    }
+    
+  }
+
 
 };
 
