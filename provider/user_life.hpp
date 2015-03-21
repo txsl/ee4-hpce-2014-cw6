@@ -29,16 +29,16 @@ public:
     std::vector<int> next(n*n);
 
     // To determine if we are usign TBB or OpenCL
-    v = getenv("HPCE_CL");
+    v = getenv("HPCE_CL_ENABLE");
 
     if(v==NULL)
     {
-      log->LogInfo("No HPCE_CL detected");
+      log->LogInfo("No HPCE_CL_ENABLE detected");
       OPT = 0;
     }
     else
     {
-      log->LogInfo("HPCE_CL detected");
+      log->LogInfo("HPCE_CL_ENABLE detected");
       OPT = atoi(v);
     }
 
