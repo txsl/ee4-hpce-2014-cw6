@@ -16,7 +16,7 @@ protected:
     std::vector<bool> res(state.size());
 
     typedef tbb::blocked_range<unsigned> my_range_t;
-    my_range_t range(0,res.size(),ceil(res.size()/4));
+    my_range_t range(0,res.size(),512);
 
     auto f=[&](const my_range_t &chunk){
       for (unsigned i = chunk.begin(); i < chunk.end(); i++) {
