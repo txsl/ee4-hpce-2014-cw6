@@ -1,8 +1,6 @@
 #ifndef user_circuit_sim_hpp
 #define user_circuit_sim_hpp
 
-#include <math.h>       /* ceil */
-
 #include "puzzler/puzzles/circuit_sim.hpp"
 #include "tbb/parallel_for.h"
 #include "tbb/blocked_range.h"
