@@ -29,33 +29,33 @@ public:
     std::vector<int> next(n*n);
 
     // To determine if we are usign TBB or OpenCL
-    v = getenv("HPCE_LIFE_OPT");
+    v = getenv("HPCE_CL");
 
     if(v==NULL)
     {
-      log->LogInfo("No HPCE_LIFE_OPT detected");
+      log->LogInfo("No HPCE_CL detected");
       OPT = 0;
     }
     else
     {
-      log->LogInfo("HPCE_LIFE_OPT detected");
+      log->LogInfo("HPCE_CL detected");
       OPT = atoi(v);
     }
 
-    if(OPT)
+    if(!OPT)
     {
       log->LogInfo("Using TBB implementation");
 
       int K;
 
-      v=getenv("HPCE_LIFE_CHUNKSIZE_K");
+      v=getenv("HPCE_CHUNKSIZE_K");
       if(v==NULL){
         K = 16;
-        log->LogInfo("No HPCE_LIFE_CHUNKSIZE_K envrionment variable found");
+        log->LogInfo("No HPCE_CHUNKSIZE_K envrionment variable found");
           // printf("HPCE_FFT_LOOP_K not set. Using a size of %i instead.\n", chunk_size);
       }else{
         K = atoi(v);
-        log->LogInfo("HPCE_LIFE_CHUNKSIZE_K environment variable found");
+        log->LogInfo("HPCE_CHUNKSIZE_K environment variable found");
           // printf("Using a chunk size of %i (set in the environment variable 'HPCE_FFT_LOOP_K'.\n)", chunk_size);
       }
       log->LogInfo("Chunksize set as K=%i", K);
