@@ -35,7 +35,7 @@ protected:
         res[i] = calcSrc(input->flipFlopInputs[i], state, input);
       }
     };
-    tbb::parallel_for(range, f);
+    tbb::parallel_for(range, f, tbb::simple_partitioner());
 
     return res;
   }
