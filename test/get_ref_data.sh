@@ -4,7 +4,7 @@
 rm -rf aws_ref
 
 # Download tar.gz of data
-curl http://www.doc.ic.ac.uk/~txl11/aws_ref_v2.tar.gz -o aws_ref.tar.gz
+curl http://www.doc.ic.ac.uk/~txl11/aws_ref_v3.tar.gz -o aws_ref.tar.gz
 
 tar -xzf aws_ref.tar.gz
 
