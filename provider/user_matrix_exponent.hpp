@@ -39,6 +39,15 @@ public:
     const puzzler::MatrixExponentInput *input,
     puzzler::MatrixExponentOutput *output
   ) const {
+    /* ***********************************************************************
+     * Values for TBB and Openl CL have been hardcoded to work best on AWS.
+     * 
+     * See readme.md for explanation, and the following URL to see what our
+     * test code looked like
+     *
+     * https://github.com/HPCE/hpce_2014_cw6_dm1911_txl11/commit/4307ba0ce965ff887d8055a0118fc2b0c3ded31d
+     * *********************************************************************** */
+    
     std::vector<uint32_t> hash(input->steps);
     size_t cbBufferMatrix = input->n*input->n*sizeof(uint32_t);
     size_t cbBufferVector =          input->n*sizeof(uint32_t);
@@ -95,6 +104,14 @@ public:
     const puzzler::MatrixExponentInput *input,
     puzzler::MatrixExponentOutput *output
   ) const {
+    /* ***********************************************************************
+     * Values for TBB and Openl CL have been hardcoded to work best on AWS.
+     * 
+     * See readme.md for explanation, and the following URL to see what our
+     * test code looked like
+     *
+     * https://github.com/HPCE/hpce_2014_cw6_dm1911_txl11/commit/4307ba0ce965ff887d8055a0118fc2b0c3ded31d
+     * *********************************************************************** */
     std::vector<uint32_t> hash(input->steps);
 
     log->LogVerbose("Setting up A and identity");
