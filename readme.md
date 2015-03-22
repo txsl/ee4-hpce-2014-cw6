@@ -19,13 +19,15 @@ A number of attempts were made to improve the speed of algorithms (see testing),
 
 ## Disclaimer
 
-All testing has been carried out on Linux and AWS machines. For AWS, only a GPU instance with `HPCE-2014-GPU-Image` was tested.
+All testing has been carried out on Macintosh, Linux (DOC) and AWS machines. For AWS, only a GPU instance with `HPCE-2014-GPU-Image` was tested.
 
-OpenCL requires executables to be run from the project root (i.e. `./bin/run_puzzle` as opposed to `cd bin && ./run_puzzle`).
+OpenCL requires executables to be run from the project root (i.e. `./bin/run_puzzle` as opposed to `cd bin && ./run_puzzle`). One could also export the relevant environment variable.
 
 ## Notes
 
-An OpenCL [shared library](https://github.com/HPCE/hpce_2014_cw6_dm1911_txl11/blob/master/provider/opencl_frame.hpp) was created to keep code clean. This is very rudimental, but fit to serve it's purpose for this coursework. Please note that, as the current way it's been implemented, it only allows for OpenCL to be run on device and platform 0. This is an easy change, but not required for our purposes.
+An OpenCL [shared library](https://github.com/HPCE/hpce_2014_cw6_dm1911_txl11/blob/master/provider/opencl_frame.hpp) was created to keep code clean. This is very rudimental, but fit to serve it's purpose for this coursework. Please note that, as the current way it's been implemented, it only allows for OpenCL to be run on device and platform 0.
+
+This is an easy change to fix, but not required for our purposes / for the given spec.
 
 
 # The Puzzles
