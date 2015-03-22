@@ -8,7 +8,7 @@ __kernel void matrix_multiply(
 
     vectorOut[r] = 0;
     for (int i = 0; i < n; i++) {
-      vectorOut[r] = (vectorOut[r] + ( ((uint)vectorIn[r] * (uint)matrixIn[i * n + r]) % 2147483647ULL) ) % 2147483647ULL;
+      vectorOut[r] = (vectorOut[r] + ( ((uint)vectorIn[r] * (uint)matrixIn[i * n + r]) % 2147483647UL) ) % 2147483647UL;
     }
 
 }
