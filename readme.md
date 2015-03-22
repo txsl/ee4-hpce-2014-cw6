@@ -12,11 +12,18 @@ A number of attempts were made to improve the speed of algorithms (see testing),
 ## The Puzzles
 Description of each optimisation explored and what was then actually done. Final plot of input vs output and speedup as well.
 ### Life
-`life` is a classic stencil type operation, with each cell in the grid needing to be computed for each time step. There is a clear loop dependency between each time step, but the calculation of each cell within a given time step can be calculated in parallel. Two parallelisation methods were tested: Threaded Building Blocks Parallel For loop, and OpenCL.
+`life` is a classic stencil type operation, with each cell's next state in the grid needing to be computed for each time step. There is a clear loop dependency between each time step, but the calculation of each cell within a given time step can be calculated in parallel. Two parallelisation methods were tested: Threaded Building Blocks Parallel For loop, and OpenCL.
 
 In order for either optimisation to be applied, a modification had to be made. Since `life` looks at whether an individual cell is 'alive' or not, it was originally stored in a Vector of Bools. It is [well known](https://www.google.co.uk/?q=c%2B%2B+vector+bool) that the C++ implementation of a Vector of Bools is [not recommended](http://www.codingstandard.com/rule/17-1-1-do-not-use-stdvector/), and does not guarantee safe modification of values concurrently. Thus it must be converted to another datatype. In this case, they wer converted to ints. Modification of the `update` function was also necessary for this to work (although some implicit type conversion on its return value does take place).
 
- Based on analysis from our tests, we decided to .... (when to TBB or OpenCL? Chunk Size). 
+The TBB implementation was created using `tbb::parallel_for`, with the outer loop being parallel-ised. In other words, a chunk represents a certain number of columns, and the inner for loop executes across those rows (and these are running in chunked parallel groups).
+
+An OpenCL implementation would potentially run even faster, since it can operate across both dimensions in one operation, since it has plenty of cores. It also works well since we feed in the starting conditions (data about each point), and save the computed next state. By using pointers carefully, we can swap the pointers to each vector of data between iterations, and avoid the need to read the data to and from the GPU until the very end. Only then do we read the data from the GPU's memory back to be saved to the output.
+
+Based on tests run on AWS, we determined that for problem sizes of less than 250, the TBB `parallel_for` method will be used, and for problems larger the OpenCL implementation will be used. OpenCL takes longer to initialise, but for large problem sets pays off with significant gains in execution time.
+
+For problem sizes where TBB is used, the optimum value of 
+
 (graph)
 ### Matrix Exponent
 - Algorithm Optimisation (O(N^3) to O(N^2) for matrix multiplication)
@@ -24,6 +31,7 @@ In order for either optimisation to be applied, a modification had to be made. S
 
 Matrix Exponent was an interesting programm to look at. Interestingly, the David Thomas Matrix Multiplication method was used to calculate the exponent of each matrix. Though many mathematicians would be appalled by the use of such inprecise methods, the computer scientists in us were delighted to see the number of optimisations that could be done here. Specicially, as each column in the accumulator matrix was similar, the N \* N \* N operation was reduced to N \* N. We then looked at converting this to OpenCL, as this problem consits of many smaller calculations without the need to move much data around. There was little room for parallelisation between each loop (as each loop of the matrix exponent was dependant on the accumulator matrix), so TBB was not considered.
 In using OpenCL, buffers are swapped and only the first element is read from the matrix. This is as the returning hash only takes the first element of the accumulator matrix at each iteration.
+
     for (unsigned i = 2; i < input->steps; i++) {
       kernel.setArg(0, buffCurrVector);
       kernel.setArg(2, buffNextVector);
@@ -36,6 +44,17 @@ In using OpenCL, buffers are swapped and only the first element is read from the
     
 (graph)
 ### String Search
+
+String Search is searching for specific DNA patterns in a long string which represents a DNA sequence. For a given string, there is more than one pattern to find. The way in which the search code works is quite specific:
+
+It searches for a pattern match, iterating through each pattern at a given index in the string, looking for to match a pattern. It does this one by one (ie at a given point in the string, it iterates through each pattern looking for a match). As soon as it finds a match, it stops looking for patterns at that index, and updates the index (of where it is located in the string) to the next location after the matched pattern. If no pattern is found, it increments the index by one (ie moves along by one) and starts looking for a pattern once again.
+
+If we are lucky and the pattern match occurs for the first pattern in our series, we will avoid unnecessary calculations. On the other end of the spectrum, if the last pattern is the one matched each time, all of the other pattern searches (for different patterns) were futile, and most importantly for us, a waste of time.
+
+The nature of operation (searching through each pattern _until_ a match is found) makes it difficult to run in parallel, since knowing when to stop searching may not occur in the correct order.
+
+The first strategy attempted was to calculate the match of each pattern in each string position 
+
 ### Option Explicit
 - TBB to calculate initial state
 - TBB to calculate future states (inner loop)
