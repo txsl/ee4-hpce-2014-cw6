@@ -47,7 +47,11 @@ public:
     auto A = MatrixCreate(input->n, input->seed);
     auto acc = MakeSpecialMatrix(input->n, A);
     hash[0] = 1;
-    if (input->steps < 2) return;
+    if (input->steps < 2) {
+      log->LogVerbose("Ending prematurely, as size = 1");
+      output->hashes = hash;
+      return;
+    }
     hash[1] = acc[0];
 
     puzzler::OpenclHelper opencl(log);
@@ -97,9 +101,14 @@ public:
     auto A = MatrixCreate(input->n, input->seed);
     auto acc = MakeSpecialMatrix(input->n, A);
     hash[0] = 1;
-    if (input->steps < 2) return;
-    hash[1] = acc[0];
 
+
+    if (input->steps < 2) {
+      log->LogVerbose("Ending prematurely, as size = 1");
+      output->hashes = hash;
+      return;
+    }
+    hash[1] = acc[0];
 
     log->LogVerbose("Beginning multiplication - Smart Way");
     for (unsigned i = 2; i < input->steps; i++) {
