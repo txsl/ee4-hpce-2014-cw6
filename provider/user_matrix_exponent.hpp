@@ -43,8 +43,6 @@ public:
     size_t cbBufferMatrix = input->n*input->n*sizeof(uint32_t);
     size_t cbBufferVector =          input->n*sizeof(uint32_t);
 
-
-
     log->LogVerbose("Setting up A and identity");
     auto A = MatrixCreate(input->n, input->seed);
     auto acc = MakeSpecialMatrix(input->n, A);
@@ -70,7 +68,7 @@ public:
     queue.enqueueWriteBuffer(buffCurrVector, CL_TRUE, 0, cbBufferVector, &acc[0], NULL);
     kernel.setArg(1, buffCurrMatrix);
 
-    log->LogVerbose("Beginning multiplication - Smart Way");
+    log->LogVerbose("Beginning multiplication - OpenCL");
     for (unsigned i = 2; i < input->steps; i++) {
       log->LogDebug("Iteration %d", i);
       kernel.setArg(0, buffCurrVector);
