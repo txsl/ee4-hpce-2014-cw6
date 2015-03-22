@@ -62,7 +62,7 @@ Based on tests run on AWS, we determined that for problem sizes of less than 250
 
 For problem sizes where TBB is used, the optimum chunk size of 128 was chosen. 
 
-(graph)
+![](http://www.doc.ic.ac.uk/~txl11/hpce_6_imgs/final/life.png)
 
 ### Puzzle: Matrix Exponent
 
@@ -87,7 +87,7 @@ In using OpenCL, buffers are swapped and only the first element is read from the
     
 Thought not tested, a further optimisation to look into would have been using TBB on `MatrixExponentPuzzle::MatrixCreate()` to speed up with creation of the `A` file. 
 
-(graph)
+![](http://www.doc.ic.ac.uk/~txl11/hpce_6_imgs/final/matrix_exponent.png)
 
 ### Puzzle: String Search
 
@@ -101,6 +101,8 @@ The nature of operation (searching through each pattern _until_ a match is found
 
 The first strategy attempted was to calculate the match of each pattern in each string position 
 
+![](http://www.doc.ic.ac.uk/~txl11/hpce_6_imgs/final/string_search.png)
+
 ### Puzzle: Option Explicit
 - TBB to calculate initial state
 - TBB to calculate future states (inner loop)
@@ -109,6 +111,7 @@ In the algorithm used to determine the value of certain derivatives, a fast exec
 
 Interestingly enough, though this problem consisted of many calculations, we saw little room for OpenCL. This came from the fact that there were many memory calls and branches (if statements, `std::max`, etc). TBB, with a hard-coded chunk size of 256, was used to iterate over both of the for loops. We found that the `option_explicit` algorithm was the only one that required a chunk size over 128. This is probably due to the fact that the `std::pow` calculation used at the start of the second for loop is quite heavy.
 
+![](http://www.doc.ic.ac.uk/~txl11/hpce_6_imgs/final/option_explicit.png)
 
 ### Puzzle: Circuit Sim
 - TBB used to parallelise calculation of next_state.
@@ -119,7 +122,7 @@ The second approach taken was to parallelise the calculation of flip-flip inputs
 
 It's important to note that `std::vector<bool>` is not handled well. As such, a change in the underlying values (from bool to int) was made. This was required, as otherwise the output would sometime be incorrect (see notes in `life` for more information on errors with std::vector<bool>).
 
-(graph)
+![](http://www.doc.ic.ac.uk/~txl11/hpce_6_imgs/final/circuit_sim.png)
 
 ### Puzzle: Median Bits
 
@@ -129,6 +132,7 @@ Again, no obious algorithm improvement was seen here. Perhaps with some further 
 
 We used `TBB::parallel_for` to improve the speed of the creation of the `tmp` vector. As sorting is dependant on relative values, this couldn't be further optimised. 
 
+![](http://www.doc.ic.ac.uk/~txl11/hpce_6_imgs/final/median_bits.png)
 
 # Testing
 
@@ -141,7 +145,6 @@ More scripts then use this test data as its input and reference. `test_tbb_chunk
 Local analysis takes the form of Python scripts which parse the log files to check that the code executed correctly (ie our output matches the reference output), and then parses the logs to work out the reference execution time, and our code execution time. If the output does not match a given input, this is raised via the terminal and that particular data point is not plotted. This has proven particular useful at identifying edge cases which otherwise may not have been spotted.
 
 The Python scripts `plot_chunks.py` and `plot_final_results.py` are used for parsing the majority of data - both for plotting differing chunk values and the final code against reference execution time.
-
 
 
 # Appendix: Optimisation Conclusions
