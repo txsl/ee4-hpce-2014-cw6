@@ -16,7 +16,7 @@ public:
 		       puzzler::StringSearchOutput *output
 		       ) const override
   {
-    if (input->stringLength > 1200000 || input->stringLength < 900) {
+    if (input->stringLength > 200000 || input->stringLength < 900) {
       ReferenceExecute(log, input, output);
       return;
     }

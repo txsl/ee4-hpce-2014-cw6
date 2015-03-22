@@ -184,7 +184,7 @@ The following graphs show some of the results from the testing we ran on our cod
 
 | Algo Name | TBB Chunk Size | OpenCL |
 | --------- |----------------|--------|
-|string_search| 16 (only when 900<n<1,200,000)           | N/A    |
+|string_search| 16 (only when 900<n<200,000)           | N/A    |
 
 ![](http://www.doc.ic.ac.uk/~txl11/hpce_6_imgs/chunked/option_explicit.png)
 
