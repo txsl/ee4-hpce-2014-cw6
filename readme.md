@@ -15,6 +15,8 @@ After understanding each agorithm's functionality, we searched for :
 
 A number of attempts were made to improve the speed of algorithms (see testing), and **optimised results were hard coded to provide the best possible speed on AWS g2.2xlarge instances** (*this is a competition, after all!*). Each optimised algorithm has code that allows the fine tuning of TBB and OpenCL parameters, and these were used to determine optimum values. In an attempt to save set up time though, these have been removed in our final submission ([this commit](https://github.com/HPCE/hpce_2014_cw6_dm1911_txl11/commit/4307ba0ce965ff887d8055a0118fc2b0c3ded31d) will show insight of what we had previously). Sales people don't know how to use `export` anyhow, so all is good.
 
+Notes on how we came to our conclusions are at the bottom of this readme under "Optimisation Conclusions".
+
 # Disclaimers and Notes
 
 ## Disclaimer
@@ -32,7 +34,7 @@ This is an easy change to fix, but not required for our purposes / for the given
 
 # The Puzzles
 
-## Life
+### Puzzle: Life
 
 `Life` is a classic stencil type operation, with each cell's next state in the grid needing to be computed for each time step. There is a clear loop dependency between each time step, but the calculation of each cell within a given time step can be calculated in parallel. Two parallelisation methods were tested: Threaded Building Blocks Parallel For loop, and OpenCL.
 
@@ -48,7 +50,7 @@ For problem sizes where TBB is used, the optimum chunk size of 128 was chosen.
 
 (graph)
 
-## Matrix Exponent
+### Puzzle: Matrix Exponent
 
 - Algorithm Optimisation (O(N^3) to O(N^2) for matrix multiplication)
 - OpenCL with some clever modifications.
@@ -73,7 +75,7 @@ Thought not tested, a further optimisation to look into would have been using TB
 
 (graph)
 
-## String Search
+### Puzzle: String Search
 
 String Search is searching for specific DNA patterns in a long string which represents a DNA sequence. For a given string, there is more than one pattern to find. The way in which the search code works is quite specific:
 
@@ -85,7 +87,7 @@ The nature of operation (searching through each pattern _until_ a match is found
 
 The first strategy attempted was to calculate the match of each pattern in each string position 
 
-## Option Explicit
+### Puzzle: Option Explicit
 - TBB to calculate initial state
 - TBB to calculate future states (inner loop)
 
@@ -94,7 +96,7 @@ In the algorithm used to determine the value of certain derivatives, a fast exec
 Interestingly enough, though this problem consisted of many calculations, we saw little room for OpenCL. This came from the fact that there were many memory calls and branches (if statements, `std::max`, etc). TBB, with a hard-coded chunk size of 256, was used to iterate over both of the for loops. We found that the `option_explicit` algorithm was the only one that required a chunk size over 128. This is probably due to the fact that the `std::pow` calculation used at the start of the second for loop is quite heavy.
 
 
-## Circuit Sim
+### Puzzle: Circuit Sim
 - TBB used to parallelise calculation of next_state.
 
 Due to the complex nature of the way flip flops and nand gates are connected in this algorithm, we struggled to optimise the inherent algorithm. However, two approaches were taken to optimise this algo. Firstly,  `tbb::taskgroup` was implemented to calculate the source of each nand input. This actually gave **worse** results than the reference algorithm. In trying to determine a way to stop `taskgroup` from splitting tasks unneccessarily (perhaps after a certain depth), we decided to move away from taskgroup for other approaches. It was impossible to tell circuit depth (i.e. nodes until a flip flop) with only information on nand gate index, as these are set up in a completely random way.
@@ -105,7 +107,7 @@ It's important to note that `std::vector<bool>` is not handled well. As such, a 
 
 (graph)
 
-## Median Bits
+### Puzzle: Median Bits
 
 - TBB to parallelise creation of the vector using the seet
 
@@ -116,3 +118,40 @@ We used `TBB::parallel_for` to improve the speed of the creation of the `tmp` ve
 # Testing
 
 What we tested and how we tested it
+
+
+## Appendix: Optimisation Conclusions
+
+The following graphs show some of the results from the testing we ran on our code. The final results are slightly different, as our final code did not have the overhead required to allow for granularity. Nonetheless, the following graphs for each algorithm help explain our conclusions when it comes to TBB chunk size, as well as swapping over to Open CL.
+
+![](http://www.doc.ic.ac.uk/~txl11/hpce_6_imgs/chunked/life.png)
+
+| Algo Name | TBB Chunk Size | OpenCL |
+| --------- |----------------|--------|
+|life       | 128            | after n=250 |
+
+
+![](http://www.doc.ic.ac.uk/~txl11/hpce_6_imgs/chunked/matrix_exponent.png)
+
+| Algo Name | TBB Chunk Size | OpenCL |
+| --------- |----------------|--------|
+|matrix_exponent| N/A        | after n=500   |
+
+
+![](http://www.doc.ic.ac.uk/~txl11/hpce_6_imgs/chunked/option_explicit.png)
+
+| Algo Name | TBB Chunk Size | OpenCL |
+| --------- |----------------|--------|
+|option_explicit| 512            | N/A    |
+
+![](http://www.doc.ic.ac.uk/~txl11/hpce_6_imgs/chunked/circuit_sim.png)
+
+| Algo Name | TBB Chunk Size | OpenCL |
+| --------- |----------------|--------|
+|circuit_sim| 128            | N/A    |
+
+![](http://www.doc.ic.ac.uk/~txl11/hpce_6_imgs/chunked/median_bits.png)
+
+| Algo Name | TBB Chunk Size | OpenCL |
+| --------- |----------------|--------|
+|median_bits| 128            | N/A    |
