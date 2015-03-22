@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-OPENLCL="0"
+OPENCL="0"
 TBB="1"
 NORM="0"
 
@@ -23,8 +23,6 @@ if [ ! -z "$3" ]
     puz=$3
 fi
 
-echo "Starting TBB chunk size testing for ${2}"
-
 source common.sh
 
 mkdir -p $2
@@ -42,8 +40,9 @@ elif [ $puz == "life" ]; then
     log_scales=$LIFE_LOG_SCALES
     OPENCL="1"
 
-elif [ $puz == "string_search"]; then
+elif [ $puz == "string_search" ]; then
     CHUNK_SIZES=$STRING_CHUNK_SIZES
+    log_scales=$LARGE_LOG_SCALES
 
 else
     log_scales=$LARGE_LOG_SCALES
@@ -86,7 +85,7 @@ if [ ! "$OPENCL" -eq 0 ]
     done
 fi
 
-# And the OpenCL loop
+# And the 'normal' loop - using neither TBB or OpenCL (used in matrix exponent)™
 if [ ! "$NORM" -eq 0 ]
     then
 
@@ -104,4 +103,4 @@ if [ ! "$NORM" -eq 0 ]
 fi
 
 
-twitter set "@t8lim: work on `hostname` now finished on ${puz}"
+twitter set "@t8lim: work on `hostname` now finished on ${puz} at `date`"
