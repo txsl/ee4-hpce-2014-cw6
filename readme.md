@@ -1,144 +1,54 @@
-HPCE 2014 CW6
-=============
+# HPCE6 
+After woking diligently on optimising the given algorithms, we returned our code to the sales and marketing team. As these algorithms are highly commercially sensitive, details of our conversations must remain secret. However, vocabulary used in the meeting room upon presenting our results included "bloody amazing" and "best thing since Jesus". We've seen a 100% market takeover in only 48 hours, and the optimisations have been critical in raising a valutation of £1.2tn. The sales team were more than happy, now earning a healthy commission on sales of these excellent programms. 
+Furthermore, the CEO of the company has personally applauded us as volontary students, and has offered us full time positions as executives. Honoured by the offer, but bound by Peter Cheung to decline, we instead accepted a program licence to use the below 6 algorithms without limit. Considering this would otherwise cost a full £15.00, we think the project has been a good experience for us.
+We move forward now looking at applying our excellent optimisation strategies at other prestigious software companies such as Kodak or HP.
+# Approach 
+After understanding each agorithm's functionality, we searched for :
+- Potential Algorithm Improvements
+- Potential TBB use
+- Potential OpenCL use
 
-- Issued: Sun 8th March
-- Due: Sun 22nd March, 23:59
+A number of attempts were made to improve the speed of algorithms (see testing), and **optimised results were hard coded to provide the best possible speed on AWS g2.2xlarge instances** (*this is a competition, after all!*). Each optimised algorithm has code that allows the fine tuning of TBB and OpenCL parameters, and these were used to determine optimum values. In an attempt to save set up time though, these have been commented out for our final submission. Sales people don't know how to use `export` anyhow, so all is good.
+## The Puzzles
+Description of each optimisation explored and what was then actually done. Final plot of input vs output and speedup as well.
+### Life
+`life` is a classic stencil type operation, with each cell in the grid needing to be computed for each time step. There is a clear loop dependency between each time step, but the calculation of each cell within a given time step can be calculated in parallel. Two parallelisation methods were tested: Threaded Building Blocks Parallel For loop, and OpenCL.
 
-(First DoC exam open to EEE/EIE/MSc is 24th March, AFAICT)
+In order for either optimisation to be applied, a modification had to be made. Since `life` looks at whether an individual cell is 'alive' or not, it was originally stored in a Vector of Bools. It is [well known](https://www.google.co.uk/?q=c%2B%2B+vector+bool) that the C++ implementation of a Vector of Bools is [not recommended](http://www.codingstandard.com/rule/17-1-1-do-not-use-stdvector/), and does not guarantee safe modification of values concurrently. Thus it must be converted to another datatype. In this case, they wer converted to ints. Modification of the `update` function was also necessary for this to work (although some implicit type conversion on its return value does take place).
 
-(Just realised I haven't made the private repositories yet. To come...)
+ Based on analysis from our tests, we decided to .... (when to TBB or OpenCL? Chunk Size). 
+(graph)
+### Matrix Exponent
+- Algorithm Optimisation (O(N^3) to O(N^2) for matrix multiplication)
+- OpenCL with some clever modifications.
 
-Specification
--------------
-
-You have been given the included code with the
-goal of making things faster. On enquiring which
-things, you were told "all the things". Further
-deliberation on what a "thing" was resulted in
-the elaboration that it was an instance of
-`puzzler::Puzzle`. Further tentative queries
-revealed that "faster" was determined by the
-wall-clock execution time of `puzzler::Puzzle::Execute`,
-with an emphasis on larger scale factors, on an
-amazon GPU instance.
-
-At this point marketing got quite irate, and
-complained about developers not knowing how to
-do their job, and they had commissioned this wonderful
-enterprise framework, and did they have to do
-all the coding themselves? Sales then chimed
-in that they had similar problems having to
-hold the developers hand, and that they did
-VBA as part of their business masters, and it was
-easy. Oh, and that they had already sold a customer
-a version that contains more things; the spec should
-be ready on Friday 13th (and no, that is not ominous,
-it just happens to be a religious holiday for the
-customer), but it is only "small" stuff. Developers
-are all agile these days aren't they?
-
-Meta-specification
-------------------
-
-The previous coursework was about deep diving on one
-problem, and (hopefully) trying out a number of alternative
-strategies. This coursework represents the other end
-of the spectrum, which is sadly the more common end: you
-haven't got much time, either to analyse the problem or
-to do low-level optimisation, and the problem is actually
-a large number of sub-problems. So the goal here is to
-identify and capture as much of the low-hanging performance
-fruit as possible while not breaking anything.
-
-The code-base I've given you is somewhat baroque,
-(though not as convoluted as my original version,
-I took pity), and despite having some rather iffy
-OOP practises, actually has things quite reasonably
-isolated. You will probably encounter the problem
-that sometimes the reference solution starts to take
-a very long time at large scales, but the persistence
-framework gives you a way of dealing with that.
-
-Beyond that, there isn't a lot more guidance, either
-in terms of what you should focus on, or how
-_exactly_ it will be measured. Part of the assesment
-is in seeing whether you can work out what can be
-accelerated, and where you should spend your time.
-And in reacting to externally evolving specs and
-code - the Friday 13th comment is true, though the
-change is minor (there aren't another five problems),
-additive (all work done this week is needed and
-evaluated for the final assesment), and has a default
-fallback (a git pull will bring any submission back
-into correcness).
-
-The allocation of marks I'm using is as before:
-
-- Performance: 33%
-
-  - You are competing with each other here, so there is an element of
-    judgement in terms of how much you think others are doing or are
-    capable of.
-
-- Correctness: 33%
-
-  - As far as I'm aware the ReferenceExecute is always correct, though slow.
-
-- Code style, insight, analysis: 33%
-
-  - Can I understand your code (can you understand your code)? Are the methods
-    and techniques employed appropriate?
-
-Deliverable format
-------------------
-
-- As before, your repository should contain a readme.txt, readme.pdf, or readme.md covering:
-
-    - What is the approach used to improve performance, in terms of algorithms, patterns, and optimisations.
-
-    - A description of any testing methodology or verification.
-
-    - A summary of how work was partitioned within the pair, including planning, analysis, design, and testing, as well as coding.
-
-- Anything in the `include` directory is not owned by you, and subject to change
-  
-  - Changes will happen in an additive way (existing classes and APIs will remain, new ones may be added)
-  
-  - Bug-fixes to `include` stuff are still welcome.
-
-- The public entry point to your code is via `puzzler::PuzzleRegistrar::UserRegisterPuzzles`,
-    which must be compiled into the static library `lib/libpuzzler.a`.
+Matrix Exponent was an interesting programm to look at. Interestingly, the David Thomas Matrix Multiplication method was used to calculate the exponent of each matrix. Though many mathematicians would be appalled by the use of such inprecise methods, the computer scientists in us were delighted to see the number of optimisations that could be done here. Specicially, as each column in the accumulator matrix was similar, the N \* N \* N operation was reduced to N \* N. We then looked at converting this to OpenCL, as this problem consits of many smaller calculations without the need to move much data around. There was little room for parallelisation between each loop (as each loop of the matrix exponent was dependant on the accumulator matrix), so TBB was not considered.
+In using OpenCL, buffers are swapped and only the first element is read from the matrix. This is as the returning hash only takes the first element of the accumulator matrix at each iteration.
+    for (unsigned i = 2; i < input->steps; i++) {
+      kernel.setArg(0, buffCurrVector);
+      kernel.setArg(2, buffNextVector);
+      queue.enqueueNDRangeKernel(kernel, offset, globalSize, localSize); 
+      queue.enqueueBarrier();
+      //read only the first element straight into hash[i].
+      queue.enqueueReadBuffer(buffNextVector, CL_TRUE, 0, sizeof(uint32_t), &hash[i]);
+      std::swap(buffCurrVector, buffNextVector);
+    }
     
-    - Clients will not directly include your code, they will only `#include "puzzler/puzzles.h`,
-      then access puzzles via the registrar. They will get access to the registrar implementation
-      by linking against `lib/libpuzzler.a`.
-    
-    - **Note**: If you do something complicated in your building of libpuzzler, it should still be
-      possible to build it by going into `lib` and calling `make all`.
-      
-- The programs in `src` have no special meaning or status, they are just example programs 
-
-The reason for all this strange indirection is that I want to give
-maximum freedom for you to do strange things within your implementation
-(example definitions of "strange" include CMake) while still having a clean
-abstraction layer between your code and the client code.
-
-Notes
------
-
-All the algorithms here are quite classic, though for the most
-part different enough to require some thought. Where it is possible
-to directly use an off-the-shelf implementation (partially true in
-most cases), you need to bear in mind that you're trying to
-show-case your understanding and ability here. So if you're
-relying on someone elses library, you need to:
-
-- Correctly and clearly attribute it
-- Be able to demonstrate you understand how and why it works
-
-Make sure you spend a little bit of time thinking about how
-feasible it is to accelerate something - in some cases you
-may be able to get linear speed-up in the processor count,
-in others less so. Sometimes the fundamental algorithmic
-complexity doesn't look friendly, and can be improved in
-simple ways.
+(graph)
+### String Search
+### Option Explicit
+- TBB to calculate initial state
+- TBB to calculate future states (inner loop)
+In the algorithm used to determin the value of derivatives of the company, a fast execution time was vital. Interestingly enough, though this problem consisted of many calculations, we saw little room for OpenCL. This came from the fact that there were many memory calls and branches (if statements, `std::max`, etc). We turned to TBB to parallelise two loops; the first one that sets up `state`, and the inner `for` loop in the calculation of future states. 
+### Circuit Sim
+- TBB used to parallelise calculation of next_state.
+Due to the complex nature of the way flip flops and nand gates are connected in this algorithm, we struggled to find a better algorithm here. However, we took two approaches to optimised. Firstly, we looked at using `tbb::taskgroup` to calculate the source of each nand input. This actually gave **worse** results than the reference algorithm. In trying to determine a way to stop `taskgroup` from splitting tasks unneccessarily (perhaps after a certain depth), we decided to move away from taskgroup for other approaches. It was impossible to tell circuit depth (i.e. nodes until a flip flop) with only information on nand gate index.
+The second approach taken was to parallelise the calculation of flip-flip inputs in the `next` function. This means that the calculation of the `next_state` variable is calculated in parallel (input to flip flop one is not affected by input to flip flop two). There were no (*obvious*) memory optimisations here.
+It's important to note that TBB does not handle the `bool` type very well. As such, a change in the underlying values (from bool to int) was made. This was required, as otherwise the output would sometime be incorrect.
+(graph)
+### Median Bits
+- TBB to parallelise creation of the vector using the seet
+Again, no obious algorithm improvement was seen here. Perhaps with some further time and work we could have looked at a better algorithm to calculate temp without as many loops (the XOR operations in side the inner loop seem to carry on no dependancy and so can't be minimised). 
+We used `TBB::parallel_for` to improve the speed of the creation of the `tmp` vector. As sorting is dependant on relative values, this couldn't be further optimised. 
+## Testing
+What we tested and how we tested it
