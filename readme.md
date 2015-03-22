@@ -120,13 +120,17 @@ We used `TBB::parallel_for` to improve the speed of the creation of the `tmp` ve
 
 Testing formed an important part of the project: optimised code which leads to incorrect output would cause an upset Head of Sales. The knowledge that VBA is more correct than OpenCL is enough to make any grown adult weep.
 
-In order to save time regenerating reference outputs each time (as is the case with `run_puzzle`), a set of input data and reference output data was created. The binary objects were too large to commit to the repository, but sit on [txl11's personal site on DoC](http://www.doc.ic.ac.uk/~txl11/) and are downloaded (handily via the ``) and uncompressed on each machine being used for testing. The script `generate
+In order to save time regenerating reference outputs each time (as is the case with `bin/run_puzzle`), a set of input data and reference output data was created. The binary objects were too large to commit to the repository, but sit on [txl11's personal site on DoC](http://www.doc.ic.ac.uk/~txl11/) and are downloaded (handily via the `get_ref_data.sh` script), uncompressed on each machine being used for testing. The script `generate_ref_input_output.sh` runs `bin/create_puzzle_input` and `bin/execute_puzzle` for various sizes as specified for each puzzle (usually based loosely on reference execution time).
+
+More scripts then use this test data as its input and reference. `test_tbb_chunks.sh` varies the enviroment variables to change the TBB chunk size, as well as enable and disable OpenCL, and `test_output.sh` simply runs the non_reference version of code (this being used at the end once all chunksize parameters etc have been hardcoded in). The output of the non_reference execution is then sent to `bin/compare_puzzle` where it is compared to the reference output binary generated earlier. The output logs of all stages of code execution are saved and committed (usually in a tar.gz file to save space) for further local analysis.
+
+Local analysis takes the form of Python scripts which parse the log files to check that the code executed correctly (ie our output matches the reference output), and then parses the logs to work out the reference execution time, and our code execution time. If the output does not match a given input, this is raised via the terminal and that particular data point is not plotted. This has proven particular useful at identifying edge cases which otherwise may not have been spotted.
+
+The Python scripts `plot_chunks.py` and `plot_final_results.py` are used for parsing the majority of data - both for plotting differing chunk values and the final code against reference execution time.
 
 
-What we tested and how we tested it
 
-
-## Appendix: Optimisation Conclusions
+# Appendix: Optimisation Conclusions
 
 The following graphs show some of the results from the testing we ran on our code. The final results are slightly different, as our final code did not have the overhead required to allow for granularity. Nonetheless, the following graphs for each algorithm help explain our conclusions when it comes to TBB chunk size, as well as swapping over to Open CL.
 
