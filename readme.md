@@ -180,6 +180,12 @@ The following graphs show some of the results from the testing we ran on our cod
 |matrix_exponent| N/A        | after n=500   |
 
 
+![](http://www.doc.ic.ac.uk/~txl11/hpce_6_imgs/chunked/string_search.png)
+
+| Algo Name | TBB Chunk Size | OpenCL |
+| --------- |----------------|--------|
+|string_search| 16 (only when 900<n<1,200,000)           | N/A    |
+
 ![](http://www.doc.ic.ac.uk/~txl11/hpce_6_imgs/chunked/option_explicit.png)
 
 | Algo Name | TBB Chunk Size | OpenCL |
@@ -197,4 +203,3 @@ The following graphs show some of the results from the testing we ran on our cod
 | Algo Name | TBB Chunk Size | OpenCL |
 | --------- |----------------|--------|
 |median_bits| 128            | N/A    |
->>>>>>> 6ef7259f9eab7ea92eddbdbd8b0199fa77495f59
