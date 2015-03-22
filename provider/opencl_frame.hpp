@@ -98,7 +98,7 @@ public:
       selectedDevice=atoi(getenv("HPCE_SELECT_DEVICE"));
     }
 
-    log->LogInfo("Choosing platform %i for use of OpenCL", selectedDevice);
+    log->LogInfo("Choosing device %i for use of OpenCL", selectedDevice);
 
     this->devices = devices;
     this->device  = devices.at(selectedDevice);

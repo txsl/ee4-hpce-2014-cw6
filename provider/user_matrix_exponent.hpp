@@ -39,17 +39,28 @@ public:
     const puzzler::MatrixExponentInput *input,
     puzzler::MatrixExponentOutput *output
   ) const {
+    /* ***********************************************************************
+     * Values for TBB and Openl CL have been hardcoded to work best on AWS.
+     * 
+     * See readme.md for explanation, and the following URL to see what our
+     * test code looked like
+     *
+     * https://github.com/HPCE/hpce_2014_cw6_dm1911_txl11/commit/4307ba0ce965ff887d8055a0118fc2b0c3ded31d
+     * *********************************************************************** */
+    
     std::vector<uint32_t> hash(input->steps);
     size_t cbBufferMatrix = input->n*input->n*sizeof(uint32_t);
     size_t cbBufferVector =          input->n*sizeof(uint32_t);
-
-
 
     log->LogVerbose("Setting up A and identity");
     auto A = MatrixCreate(input->n, input->seed);
     auto acc = MakeSpecialMatrix(input->n, A);
     hash[0] = 1;
-    if (input->steps < 2) return;
+    if (input->steps < 2) {
+      log->LogVerbose("Ending prematurely, as size = 1");
+      output->hashes = hash;
+      return;
+    }
     hash[1] = acc[0];
 
     puzzler::OpenclHelper opencl(log);
@@ -70,7 +81,7 @@ public:
     queue.enqueueWriteBuffer(buffCurrVector, CL_TRUE, 0, cbBufferVector, &acc[0], NULL);
     kernel.setArg(1, buffCurrMatrix);
 
-    log->LogVerbose("Beginning multiplication - Smart Way");
+    log->LogVerbose("Beginning multiplication - OpenCL");
     for (unsigned i = 2; i < input->steps; i++) {
       log->LogDebug("Iteration %d", i);
       kernel.setArg(0, buffCurrVector);
@@ -93,15 +104,28 @@ public:
     const puzzler::MatrixExponentInput *input,
     puzzler::MatrixExponentOutput *output
   ) const {
+    /* ***********************************************************************
+     * Values for TBB and Openl CL have been hardcoded to work best on AWS.
+     * 
+     * See readme.md for explanation, and the following URL to see what our
+     * test code looked like
+     *
+     * https://github.com/HPCE/hpce_2014_cw6_dm1911_txl11/commit/4307ba0ce965ff887d8055a0118fc2b0c3ded31d
+     * *********************************************************************** */
     std::vector<uint32_t> hash(input->steps);
 
     log->LogVerbose("Setting up A and identity");
     auto A = MatrixCreate(input->n, input->seed);
     auto acc = MakeSpecialMatrix(input->n, A);
     hash[0] = 1;
-    if (input->steps < 2) return;
-    hash[1] = acc[0];
 
+
+    if (input->steps < 2) {
+      log->LogVerbose("Ending prematurely, as size = 1");
+      output->hashes = hash;
+      return;
+    }
+    hash[1] = acc[0];
 
     log->LogVerbose("Beginning multiplication - Smart Way");
     for (unsigned i = 2; i < input->steps; i++) {
@@ -115,24 +139,16 @@ public:
   }
 
 
-
-
   virtual void Execute(
     puzzler::ILog *log,
     const puzzler::MatrixExponentInput *input,
     puzzler::MatrixExponentOutput *output
   ) const override {
-    char* s = getenv("HPCE_CL_ENABLE");
-    int v = 0;
-    if (s!=NULL) {
-      v = atoi(getenv("HPCE_CL_ENABLE"));
-    }
-
-    if(v==1) {
-      log->LogInfo("Running with Open CL");
+    if(input->steps>500) {
+      log->LogInfo("input->n is more than 500. Running with Open CL");
       ExecuteWithOpenCl(log, input, output);
     } else {
-      log->LogInfo("Running without Open CL");
+      log->LogInfo("input->n is less than or equal to 500. Running without Open CL");
       ExecuteNoOpenCl(log, input, output);
     }
     
