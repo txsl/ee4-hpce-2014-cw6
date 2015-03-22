@@ -31,6 +31,20 @@ An OpenCL [shared library](https://github.com/HPCE/hpce_2014_cw6_dm1911_txl11/bl
 
 This is an easy change to fix, but not required for our purposes / for the given spec.
 
+## Division of labour
+
+Initially, both dm1911 and txl11 spent a couple days to understand and come to terms with the code base. The sales team, acting as expected, were more than displeased at how long this took. With some help from the development team however, the sales and marketing team trusted us a little more.
+
+After looking and understanding the core framework, we spent a bit of time working togther on analysing each algorithm as simply as possible. Involved in this discussion was the approach to optimisation (i.e. where are the biggest bottlenecks). The algorithms were then split as follows:
+
+- dm1911 to take `matrix_exponent`, `median_bits` and `circuit_sim`.
+- txl11 to take `life`, `option_explicit` and `string_search`.
+
+Further more, we added the following tasks to each others to-do list.
+
+- txl11 to run testing using python and matplotlib. See `Testing` section of this report.
+- txl11 to look at creating a Makefile that works across linux and osx.
+- dm1911 to create a standard OpenCL library for use across our implementations
 
 # The Puzzles
 
