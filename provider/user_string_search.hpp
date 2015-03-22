@@ -20,21 +20,45 @@ public:
 
     std::string data = MakeString(input->stringLength, input->seed);
 
+    char *v;
+    int K = 1;
+    v = getenv("HPCE_CHUNKSIZE_K");
+    if (v == NULL) {
+      log->LogInfo("No HPCE_CHUNKSIZE_K envrionment variable found");
+    } else {
+      K = atoi(v);
+      log->LogInfo("HPCE_CHUNKSIZE_K environment variable found as %i", K);
+    } 
+
+    typedef tbb::blocked_range<unsigned> my_range_t;
+    my_range_t range(0, input->patterns.size(), K);
+
+    std::vector <unsigned> lens(input->patterns.size(), 0);
     unsigned i = 0;
+
+    auto impl = [&](const my_range_t &chunk){
+      for (unsigned p = chunk.begin(); p < chunk.end(); p++) {
+        lens[p] = Matches(data, i, input->patterns[p]);
+      }
+    };
+
     while (i < input->stringLength) {
 
+      // thanks http://stackoverflow.com/questions/8848575/fastest-way-to-reset-every-value-of-stdvectorint-to-0
+      std::fill(lens.begin(), lens.end(), 0);
+
+      tbb::parallel_for(range, impl, tbb::simple_partitioner());
+
       for (unsigned p = 0; p < input->patterns.size(); p++) {
-        unsigned len = Matches(data, i, input->patterns[p]);
-        if (len > 0) {
+        if (lens[p] > 0) {
           log->Log(puzzler::Log_Debug, [&](std::ostream & dst) {
-            dst << "  Found " << input->patterns.at(p) << " at offset " << i << ", match=" << data.substr(i, len);
+            dst << "  Found " << input->patterns.at(p) << " at offset " << i << ", match=" << data.substr(i, lens[p]);
           });
           histogram[p]++;
-          i += len - 1;
+          i += lens[p] - 1;
           break;
         }
       }
-
       ++i;
     }
 

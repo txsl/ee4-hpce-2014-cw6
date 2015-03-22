@@ -3,6 +3,8 @@
 
 echo "Generating outputs (non reference), and comparing results with the ref out"
 
+source common.sh
+
 # http://stackoverflow.com/questions/6482377/bash-shell-script-check-input-argument
 if [ -z "$1" ]
   then
@@ -21,8 +23,6 @@ if [ ! -z "$3" ]
     echo "Specific puzzle ${3} being tested (only)"
     PUZZLES=$3
 fi
-
-source common.sh
 
 # should make both levels of directories if necessary
 mkdir -p $2

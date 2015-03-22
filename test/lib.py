@@ -5,7 +5,10 @@ CIRCUIT_SIM_LOG_SCALES = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 1000
 MATRIX_EXPONENT_LOG_SCALES = [1, 5, 10, 50, 100, 500, 1000]
 LIFE_LOG_SCALES = [1, 5, 10, 50, 100, 500, 1000, 5000]
 
-SCALE_MAPPING = {'life': LIFE_LOG_SCALES, 'option_explicit': LARGE_LOG_SCALES, 'median_bits': LARGE_LOG_SCALES}
+SCALE_MAPPING = {
+                    'life': LIFE_LOG_SCALES, 'option_explicit': LARGE_LOG_SCALES, 'median_bits': LARGE_LOG_SCALES,
+                    'string_search': LARGE_LOG_SCALES,
+                    }
 
 def get_ref_time(puzzle, size, dirname):
 
@@ -61,8 +64,9 @@ def get_test_time(filename):
             elif row[3] == ' Finished execution':
                 ref_time = float(row[1]) - start_test
 
-    if ref_time <= 0.001:
-        ref_time = 0.01
+    # Correction to floats 
+    if ref_time < 0.01:
+        ref_time = 0.00
 
     return ref_time
 
