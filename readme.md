@@ -69,5 +69,9 @@ It's important to note that TBB does not handle the `bool` type very well. As su
 - TBB to parallelise creation of the vector using the seet
 Again, no obious algorithm improvement was seen here. Perhaps with some further time and work we could have looked at a better algorithm to calculate temp without as many loops (the XOR operations in side the inner loop seem to carry on no dependancy and so can't be minimised). 
 We used `TBB::parallel_for` to improve the speed of the creation of the `tmp` vector. As sorting is dependant on relative values, this couldn't be further optimised. 
+
 ## Testing
-What we tested and how we tested it
+
+Testing formed an important part of the project: optimised code which leads to incorrect output would cause an upset Head of Sales. The knowledge that VBA is more correct than OpenCL is enough to make any grown adult weep.
+
+In order to save time regenerating reference outputs each time (as is the case with `run_puzzle`), a set of input data and reference output data was created. The binary objects were too large to commit to the repository, but sit on [txl11's personal site on DoC](http://www.doc.ic.ac.uk/~txl11/) and are downloaded (handily via the ``) and uncompressed on each machine being used for testing. The script `generate
