@@ -7,6 +7,7 @@ LIFE_LOG_SCALES = [1, 5, 10, 50, 100, 500, 1000, 5000]
 
 SCALE_MAPPING = {
                     'life': LIFE_LOG_SCALES, 'option_explicit': LARGE_LOG_SCALES, 'median_bits': LARGE_LOG_SCALES,
+                    'circuit_sim': CIRCUIT_SIM_LOG_SCALES, 'matrix_exponent': MATRIX_EXPONENT_LOG_SCALES,
                     'string_search': LARGE_LOG_SCALES,
                     }
 
@@ -48,6 +49,9 @@ def test_passed(filename):
                     return True
     except IndexError:
         pass
+    except IOError:
+        print "FILE DOES NOT EXIST {}".format(filename)
+        return False
 
     print "TEST DID NOT PASS! {}".format(filename)
     return False

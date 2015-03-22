@@ -13,9 +13,9 @@ test_dir = sys.argv[2]
 
 
 # Not currently the neatest of files..
-methods = ["string_search"]
-# methods = ["life", "median_bits", "option_explicit"]
-opencl = ["life"]
+# methods = ["string_search"]
+methods = ["life", "median_bits", "option_explicit", "circuit_sim", "matrix_exponent"]
+# opencl = ["life"]
 
 
 # CHUNK_SIZES = [2, 16, 128, 512, 1024, 4096, 16384]
@@ -24,15 +24,11 @@ for m in methods:
     legend = []
     size = []
 
-    # results = dict.fromkeys(CHUNK_SIZES, list())
-    # scales = dict.fromkeys(CHUNK_SIZES, list())
-
     results = {}
     scales = {}
-    
-    # for c in CHUNK_SIZES:
-    #     results[c] = []
-    #     scales[c] = []
+
+    speedup = []
+    speedup_scale = []
 
     results['ref'] = []
     scales['ref'] = []
@@ -40,14 +36,10 @@ for m in methods:
     results['act'] = []
     scales['act'] = []
 
-    if m in opencl:
-        results['cl'] = []
-        scales['cl'] = []
 
     for size in SCALE_MAPPING[m]:
 
         time = get_ref_time(m, size, ref_dir)
-        # print time
         
         if time is not None:
             results['ref'].append(time)
@@ -61,30 +53,37 @@ for m in methods:
                 results['act'].append(time)
                 scales['act'].append(size)
 
-        if m in opencl:
-            time = get_test_time_chunk(m, size, None, test_dir, True)
-            results['cl'].append(time)
-            scales['cl'].append(size)
+                if time != 0 and results['ref'][-1] != 0:
+                    speedup.append(results['ref'][-1]/time)
+                    speedup_scale.append(size)
 
 
-    plt.plot(scales['act'], results['act'], marker='o')
+    fig, ax1 = plt.subplots()
+
+    ax1.plot(scales['act'], results['act'], marker='o')
     legend.append('Optimised')
 
-    plt.plot(scales['ref'], results['ref'], marker='o')
+    ax1.plot(scales['ref'], results['ref'], marker='o')
+    legend.append("Reference Code")
 
-    legend.append("Reference Code")    
+    # ax1.set_ylim(0.001, results['ref'][-1])
 
-    if m in opencl:
-        plt.plot(scales['cl'], results['cl'], marker='o')
-        legend.append("OpenCL")
+    ax1.set_yscale('log')
+    ax1.set_xscale('log')
 
-    plt.yscale('log')
-    plt.xscale('log')
 
     plt.title(m)
-    plt.xlabel('Problem Size')
-    plt.ylabel('Execution time (seconds)')
+    ax1.set_xlabel('Problem Size')
+    ax1.set_xlim(left=10)
+    ax1.set_ylabel('Execution time (seconds)')
 
-    plt.legend(legend, loc='upper left')
+    ax2 = ax1.twinx()
+    ax2.plot(speedup_scale, speedup, color='r')
+    ax2.set_ylabel("Speed our_time/ref_time", color='r')
+    # ax2.set_ylim(bottom=0)
+    ax2.set_xscale('log')
+    ax2.set_xlim(left=10)
+
+    ax1.legend(legend, loc='upper left')
     plt.show()
 
