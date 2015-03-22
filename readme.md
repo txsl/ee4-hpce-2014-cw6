@@ -79,13 +79,28 @@ Thought not tested, a further optimisation to look into would have been using TB
 
 String Search is searching for specific DNA patterns in a long string which represents a DNA sequence. For a given string, there is more than one pattern to find. The way in which the search code works is quite specific:
 
-It searches for a pattern match, iterating through each pattern at a given index in the string, looking for to match a pattern. It does this one by one (ie at a given point in the string, it iterates through each pattern looking for a match). As soon as it finds a match, it stops looking for patterns at that index, and updates the index (of where it is located in the string) to the next location after the matched pattern. If no pattern is found, it increments the index by one (ie moves along by one) and starts looking for a pattern once again.
+It searches for a pattern match, iterating through each pattern at a given index in the string, looking for to match a pattern. It does this one by one (ie at a given point in the string, it iterates through each pattern looking for a match - see code below). As soon as it finds a match, it stops looking for patterns at that index, and updates the index (of where it is located in the string) to the next location after the matched pattern. If no pattern is found, it increments the index by one (ie moves along by one) and starts looking for a pattern once again.
+
+    // This is the important for loop where each pattern is tested and if a match found, the loop is broken out of
+    for (unsigned p = 0; p < pInput->patterns.size(); p++) {
+        unsigned len = Matches(data, i, pInput->patterns[p]);
+        if (len > 0) {
+            log->Log(Log_Debug, [&](std::ostream & dst) {
+                dst << "  Found " << pInput->patterns.at(p) << " at offset " << i << ", match=" << data.substr(i, len);
+        });
+        histogram[p]++;
+        i += len - 1;
+        break;
+    }
 
 If we are lucky and the pattern match occurs for the first pattern in our series, we will avoid unnecessary calculations. On the other end of the spectrum, if the last pattern is the one matched each time, all of the other pattern searches (for different patterns) were futile, and most importantly for us, a waste of time.
 
-The nature of operation (searching through each pattern _until_ a match is found) makes it difficult to run in parallel, since knowing when to stop searching may not occur in the correct order.
+The first strategy attempted was to blindly use a TBB parallel for loop for the search for a match. This proved to break the output. The nature of operation (searching through each pattern _until_ a match is found) makes it difficult to run in parallel, since knowing when to stop searching may not occur in the correct order. In hindsight this was a futile endeavour.
 
-The first strategy attempted was to calculate the match of each pattern in each string position 
+The second strategy was to create a vector of size `string_length` \ * `number_of_patterns`. And in a large for loop (which would be easily optimisable through either TBB or perhaps even OpenCL) each position and pattern would be tested. Once this had finished executing, a for loop is run to analyse the correct answers and build up the histogram. Whilst this did work for small values as a test case, it failed for large problem sizes due to the amount of memory needed. For example, a 1000 long string with 31 patterns (based on the function used to generate patterns) would create a vector with 31,000 elements.
+
+The final strategy was to create a vector the length of the number of patterns. The for loop had its break line removed, and instead the output of each call to `Matches` was saved to the relevant location in the vector. This is the part which has been parallelised - it assumes that on average a parallel loop will solve the problem faster than if we had to wait for the last call to `Matches` to find a match. After the for loop had finished, another for loop runs to look for the first match in the vector and then breaks out of the for loop. This worked, and once integrated with TBB's Parallel For was shown to run faster than the reference execution (although a modest speed increase). It's worth noting that the chunk size was made purposely smaller here than others, since there are (in comparison to the other problems) many fewer threads. But for large problem sizes (for example, 1,000,000), this chunk size will need to be made larger.
+
 
 ### Puzzle: Option Explicit
 - TBB to calculate initial state
