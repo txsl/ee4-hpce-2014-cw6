@@ -44,7 +44,7 @@ for puz in $PUZZLES; do
         # echo "Running $puz $scale"
         fname="${puz}_${scale}"
 
-        echo "Creating test output for ${puz} at scale ${scale}, and comparing with reference"
+        echo "Running ${puz} at scale ${scale}, and comparing with reference"
         ../bin/compare_puzzle_output "${1}/${fname}_ref_output" <( ../bin/execute_puzzle 0 $LOG_LEVEL < "${1}/${fname}_input" 2> "${2}/non_ref_output_${fname}.log" ) $LOG_LEVEL 2> "${2}/compare_output_${fname}.log"
     done
 
