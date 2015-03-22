@@ -1,6 +1,5 @@
 #!/bin/bash
 
-CHUNK_SIZES="2 16 128 512 1024 4096 16384"
 
 OPENLCL="0"
 TBB="1"
@@ -42,6 +41,9 @@ elif [ $puz == "circuit_sim" ]; then
 elif [ $puz == "life" ]; then
     log_scales=$LIFE_LOG_SCALES
     OPENCL="1"
+
+elif [ $puz == "string_search"]; then
+    CHUNK_SIZES=$STRING_CHUNK_SIZES
 
 else
     log_scales=$LARGE_LOG_SCALES
