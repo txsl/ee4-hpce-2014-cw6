@@ -49,17 +49,6 @@ public:
     const puzzler::CircuitSimInput *input, 
     puzzler::CircuitSimOutput *output
   ) const override {
-    char *v = getenv("HPCE_CHUNKSIZE_K");
-    int chunkSize = 16;
-    if(v==NULL) {
-      log->LogInfo("No HPCE_CHUNKSIZE_K envrionment variable found. Default to %i", chunkSize);
-    } else {
-      chunkSize = atoi(v);
-      log->LogInfo("HPCE_CHUNKSIZE_K environment variable found and set to %i ", chunkSize);
-    }
-
-
-
     log->LogVerbose("About to start running clock cycles (total = %d)", input->clockCycles);
 
     std::vector<int> state(input->inputState.begin(), input->inputState.end());
@@ -67,7 +56,7 @@ public:
     for (unsigned i = 0; i < input->clockCycles ; i++) {
       log->LogVerbose("Starting iteration %d of %d\n", i, input->clockCycles);
 
-      state = tbb_next(chunkSize, state, input);
+      state = tbb_next(128, state, input);
 
       log->Log(puzzler::Log_Debug, [&](std::ostream & dst) {
         for (unsigned i = 0; i < state.size(); i++) {

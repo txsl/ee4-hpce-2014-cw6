@@ -21,38 +21,13 @@ public:
   ) const override {
     log->LogVerbose("About to start running iterations (total = %d)", input->steps);
 
-    char *v;
-    int OPT;
     unsigned n = input->n;
-    // std::vector<bool> state=input->state;
     std::vector<int> state(input->state.begin(), input->state.end());
     std::vector<int> next(n * n);
 
-    // To determine if we are usign TBB or OpenCL
-    v = getenv("HPCE_CL_ENABLE");
+    if (n < 250) {
+      log->LogInfo("Using TBB implementation as n is smaller than 250");
 
-    if(v==NULL)
-    {
-      log->LogInfo("No HPCE_CL_ENABLE detected");
-      OPT = 0;
-    }
-    else
-    {
-      log->LogInfo("HPCE_CL_ENABLE detected");
-      OPT = atoi(v);
-    }
-
-    if (!OPT) {
-      log->LogInfo("Using TBB implementation");
-
-      int K = 16;
-      v = getenv("HPCE_CHUNKSIZE_K");
-      if (v == NULL) {
-        log->LogInfo("No HPCE_CHUNKSIZE_K envrionment variable found");
-      } else {
-        K = atoi(v);
-        log->LogInfo("HPCE_CHUNKSIZE_K environment variable found as %i", K);
-      }
 
       log->Log(puzzler::Log_Debug, [&](std::ostream & dst) {
         dst << "\n";
@@ -68,7 +43,7 @@ public:
         log->LogVerbose("Starting iteration %d of %d\n", i, input->steps);
 
         typedef tbb::blocked_range<unsigned> my_range_t;
-        my_range_t range(0, n, K);
+        my_range_t range(0, n, 128);
 
         auto impl = [&](const my_range_t &chunk) {
           for (unsigned x = chunk.begin(); x != chunk.end(); x++ ) {
@@ -85,7 +60,7 @@ public:
     }
     else
     {
-      log->LogInfo("Using OpenCL implementation");
+      log->LogInfo("Using OpenCL implementation as we have 250 or more n");
 
       size_t cbBuffer = n * n * sizeof(int);
       puzzler::OpenclHelper opencl(log);
@@ -104,7 +79,7 @@ public:
       cl::NDRange localSize = cl::NullRange;
 
       for (unsigned t = 0; t < n; t++) {
-        log->LogVerbose("On iteration %i. n=%i", t, n);
+        log->LogVerbose("On iteration %i.", t);
 
         kernel.setArg(1, buffCurr);
         kernel.setArg(2, buffNext);
@@ -132,7 +107,6 @@ public:
     log->LogVerbose("Finished steps");
 
     std::vector<bool> state_tmp(state.begin(), state.end());
-
     output->state = state_tmp;
   }
 

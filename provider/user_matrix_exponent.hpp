@@ -122,24 +122,16 @@ public:
   }
 
 
-
-
   virtual void Execute(
     puzzler::ILog *log,
     const puzzler::MatrixExponentInput *input,
     puzzler::MatrixExponentOutput *output
   ) const override {
-    char* s = getenv("HPCE_CL_ENABLE");
-    int v = 0;
-    if (s!=NULL) {
-      v = atoi(getenv("HPCE_CL_ENABLE"));
-    }
-
-    if(v==1) {
-      log->LogInfo("Running with Open CL");
+    if(input->steps>500) {
+      log->LogInfo("input->n is more than 500. Running with Open CL");
       ExecuteWithOpenCl(log, input, output);
     } else {
-      log->LogInfo("Running without Open CL");
+      log->LogInfo("input->n is less than or equal to 500. Running without Open CL");
       ExecuteNoOpenCl(log, input, output);
     }
     

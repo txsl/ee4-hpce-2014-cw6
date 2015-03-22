@@ -15,32 +15,21 @@ class OptionExplicitProvider
 {
 public:
   virtual void Execute(
-		       puzzler::ILog *log,
-		       const puzzler::OptionExplicitInput *pInput,
-		       puzzler::OptionExplicitOutput *pOutput
-		       ) const override {
-    // ReferenceExecute(log, input, output);
+    puzzler::ILog *log,
+    const puzzler::OptionExplicitInput *pInput,
+    puzzler::OptionExplicitOutput *pOutput
+  ) const override {
     typedef tbb::blocked_range<int> my_range_t;
-    int n = pInput->n;
-    double u = pInput->u, d = pInput->d;
+    int n     = pInput->n;
+    double u  = pInput->u, d = pInput->d;
+    double vU = pInput->S0, vD = pInput->S0;
+
+    std::vector<double> state(n * 2 + 1);
+    state[pInput->n] = std::max(vU - pInput->K, 0.0);
 
     log->LogInfo("Params: pInput->u=%lg, u=%lg, d=%lg, wU=%lg, wM=%lg, wD=%lg", pInput->u, u, pInput->d, pInput->wU, pInput->wM, pInput->wD);
 
-    std::vector<double> state(n * 2 + 1);
-    double vU = pInput->S0, vD = pInput->S0;
-    state[pInput->n] = std::max(vU - pInput->K, 0.0);
-    
-    char *v = getenv("HPCE_CHUNKSIZE_K");;
-    int K = 16;
-    if ( v == NULL ) {
-      log->LogInfo("No HPCE_CHUNKSIZE_K envrionment variable found, default is 16");
-    } else {
-      K = atoi(v);
-      log->LogInfo("HPCE_CHUNKSIZE_K environment variable found, set to %i", K);
-    }
-
-    auto impl = [&](const my_range_t &chunk)
-    {
+    auto impl = [&](const my_range_t &chunk) {
       double local_vU = vU * pow(u, chunk.begin() - 1);
       double local_vD = vD * pow(d, chunk.begin() - 1);
 
@@ -51,8 +40,8 @@ public:
         state[n - i] = std::max(local_vD - pInput->K, 0.0);
       }
     };
-    
-    my_range_t range(1, n+1, K);
+
+    my_range_t range(1, n + 1, 256);
     tbb::parallel_for(range, impl, tbb::simple_partitioner());
 
 
@@ -62,25 +51,25 @@ public:
 
     double wU = pInput->wU, wD = pInput->wD, wM = pInput->wM;
     std::vector<double> tmp = state;
-    auto inner_impl = [&](const my_range_t &chunk)
-    {
+
+    auto inner_impl = [&](const my_range_t &chunk) {
       double local_vU = vU * pow(u, chunk.begin());
       double local_vD = vD * pow(d, chunk.begin());
-      for(int i=chunk.begin(); i < chunk.end(); i++)
-      {
+    
+      for (int i = chunk.begin(); i < chunk.end(); i++) {
         double vCU = wU * state[n + i + 1] + wM * state[n + i] + wD * state[n + i - 1];
         double vCD = wU * state[n - i + 1] + wM * state[n - i] + wD * state[n - i - 1];
         vCU = std::max(vCU, local_vU - pInput->K);
         vCD = std::max(vCD, local_vD - pInput->K);
         tmp[n + i] = vCU;
         tmp[n - i] = vCD;
-        
+
         local_vU = local_vU * u;
         local_vD = local_vD * d;
       }
     };
 
-    my_range_t inner_range(0, n, K);
+    my_range_t inner_range(0, n, 256);
     for (int t = n - 1; t >= 0; t--) {
       tbb::parallel_for(inner_range, inner_impl, tbb::simple_partitioner());
       std::swap(state, tmp);
