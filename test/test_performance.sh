@@ -1,12 +1,7 @@
 #!/bin/bash
 
 
-PUZZLES="circuit_sim life matrix_exponent option_explicit string_search median_bits";
-
-SCALES="100 200 300 400 500 600 700 800 900 1000";
-
-LOG_LEVEL=2;
-
+import common.sh
 
 echo "Starting performance testing script.";
 
@@ -17,13 +12,35 @@ if [ -z "$1" ]
     exit 2;
 fi
 
+if [ -z "$2" ]
+  then
+    echo "Specific puzzle ${2} selected";
+    exit 2;
+fi
+
+
 # thanks http://www.cyberciti.biz/tips/linux-unix-pause-command.html
 read -p "Ensure this is being run from the 'test' directory. Hit [enter] to continue..."
 
 mkdir -p $1
 
 for puz in $PUZZLES; do
-    for scale in $SCALES; do
+
+    if [ $puz == "matrix_exponent" ]; then
+        log_scales=$MATRIX_EXPONENT_LOG_SCALES
+        
+    elif [ $puz == "circuit_sim" ]; then
+        log_scales=$CIRCUIT_SIM_LOG_SCALES
+
+    elif [ $puz == "life" ]; then
+        log_scales=$LIFE_LOG_SCALES
+
+    else
+        log_scales=$LARGE_LOG_SCALES
+        TBB="1"
+    fi
+
+    for scale in $log_scales; do
         echo "Running $puz $scale";
         fname="${puz}_${scale}.csv";
 

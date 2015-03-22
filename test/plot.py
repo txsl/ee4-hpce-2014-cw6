@@ -7,15 +7,16 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+from lib import SCALE_MAPPING
 
 dirname = sys.argv[1]
 
 # Not currently the neatest of files..
 
 methods = ["circuit_sim", "life", "matrix_exponent", "option_explicit", "string_search", "median_bits"]
-sizes = range(100, 1100, 100)
+# sizes = range(100, 1100, 100)
 
-
+methds = ["string_search"]
 
 
 for m in methods:
@@ -24,7 +25,7 @@ for m in methods:
     ref_output = []
     test_output = []
     
-    for s in sizes:
+    for s in SCALE_MAPPING[m]:
 
         name = "{0}/{1}_{2}.csv".format(dirname, m, s)
 
@@ -55,6 +56,7 @@ for m in methods:
         else:
             size.append(s)
             ref_output.append(ref_time)
+            print m, s, ref_time/60
             test_output.append(test_time)
 
     # print 'size:', size, len(size)

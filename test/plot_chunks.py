@@ -6,25 +6,32 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 
-from lib import SCALE_MAPPING, get_ref_time, get_test_time_chunk
+from lib import SCALE_MAPPING, get_ref_time, get_test_time_chunk, test_passed, get_test_time
 
 ref_dir = sys.argv[1]
 test_dir = sys.argv[2]
 
+
 # Not currently the neatest of files..
+# methods = ["string_search"]
+methods = ["string_search"]
+opencl = ["life", 'matrix_exponent']
+tbb = ["life", 'median_bits', 'option_explicit',  'circuit_sim', "string_search"]
 
-methods = ["life", "median_bits", "option_explicit"]
-opencl = ["life"]
-
-
-CHUNK_SIZES = [2, 16, 128, 512, 1024, 4096, 16384]
+# CHUNK_SIZES = [128, 512, 4096]
+CHUNK_SIZES = [1, 2, 4, 8, 16]
+# CHUNK_SIZES = [2, 16, 128, 512, 1024, 4096, 16384]
 
 for m in methods:
     legend = []
     size = []
 
-    results = dict.fromkeys(CHUNK_SIZES, list())
-    scales = dict.fromkeys(CHUNK_SIZES, list())
+    if m in tbb:   
+        results = dict.fromkeys(CHUNK_SIZES, list())
+        scales = dict.fromkeys(CHUNK_SIZES, list())
+    else:
+        results = {'act': []}
+        scales = {'act': []}
     
     for c in CHUNK_SIZES:
         results[c] = []
@@ -46,27 +53,40 @@ for m in methods:
             results['ref'].append(time)
             scales['ref'].append(size)
 
-        for c in CHUNK_SIZES:
-            time = get_test_time_chunk(m, size, c, test_dir)
-            
-            if time:
-                results[c].append(time)
-                scales[c].append(size)
+        # time = get_test_time("{}_{}".format(puzzle, size))
+        if m in tbb:
+
+            for c in CHUNK_SIZES:
+                time = get_test_time_chunk(m, size, c, test_dir)
+                
+                if time is not None:
+                    results[c].append(time)
+                    scales[c].append(size)
+
+        else:
+            if test_passed("{}/compare_output_{}_{}.log". format(test_dir, m, size)):
+                time = get_test_time("{}/non_ref_output_{}_{}.log".format(test_dir, m, size))
+
+                if time is not None:
+                    results['act'].append(time)
+                    scales['act'].append(size)
 
         if m in opencl:
             time = get_test_time_chunk(m, size, None, test_dir, True)
-            results['cl'].append(time)
-            scales['cl'].append(size)
-
-
-    for c in CHUNK_SIZES:
-        plt.plot(scales[c], results[c], marker='o')
-        legend.append("Chunksize K={}".format(c))
-
+            if time is not None:
+                results['cl'].append(time)
+                scales['cl'].append(size)
 
     plt.plot(scales['ref'], results['ref'], marker='o')
+    legend.append("Reference Code")
 
-    legend.append("Reference Code")    
+    if m in tbb:    
+        for c in CHUNK_SIZES:
+            plt.plot(scales[c], results[c], marker='o')
+            legend.append("Chunksize K={}".format(c))
+    else:
+        plt.plot(scales['act'], results['act'], marker='o')
+        legend.append("Optimised Code")
 
     if m in opencl:
         plt.plot(scales['cl'], results['cl'], marker='o')
