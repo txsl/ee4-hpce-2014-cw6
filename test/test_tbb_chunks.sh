@@ -104,4 +104,4 @@ if [ ! "$NORM" -eq 0 ]
 fi
 
 
-twitter set "@t8lim: work on `hostname` now finished"
+twitter set "@t8lim: work on `hostname` now finished on ${puz}"
