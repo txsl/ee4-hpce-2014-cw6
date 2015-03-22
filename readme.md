@@ -23,7 +23,7 @@ Notes on how we came to our conclusions are at the bottom of this readme under "
 
 All testing has been carried out on Macintosh, Linux (DOC) and AWS machines. For AWS, only a GPU instance with `HPCE-2014-GPU-Image` was tested.
 
-OpenCL requires executables to be run from the project root (i.e. `./bin/run_puzzle` as opposed to `cd bin && ./run_puzzle`). One could also export the relevant environment variable.
+OpenCL requires executables to be run from the project root (i.e. `./bin/run_puzzle` as opposed to `cd bin && ./run_puzzle`). One could also export the relevant environment variable `HPCE_CL_SRC_DIR`.
 
 ## Notes
 
