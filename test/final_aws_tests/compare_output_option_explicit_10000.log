@@ -1,0 +1,6 @@
+LogLevel = 2 -> 2
+[execute_puzzle], 1427054053.10, 2, Created log.
+[execute_puzzle], 1427054053.10, 2, Loading reference aws_ref/option_explicit_10000_ref_output
+[execute_puzzle], 1427054053.10, 2, Loading got /dev/fd/63
+value = 0.448242, alt=0.448242, diff=0, tol=1e-06
+[execute_puzzle], 1427054053.34, 2, Outputs are equal.

@@ -1,0 +1,5 @@
+LogLevel = 2 -> 2
+[execute_puzzle], 1426770958.43, 2, Created log.
+[execute_puzzle], 1426770958.43, 2, Loading reference doc_ray_ref/life_100_ref_output
+[execute_puzzle], 1426770958.43, 2, Loading got /dev/fd/63
+Caught exception : FileInStream::Recv - Not all data was recieved.

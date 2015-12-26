@@ -1,0 +1,5 @@
+LogLevel = 2 -> 2
+[execute_puzzle], 1427027135.37, 2, Created log.
+[execute_puzzle], 1427027135.37, 2, Loading reference doc_ray_ref/string_search_1000_ref_output
+[execute_puzzle], 1427027135.37, 2, Loading got /dev/fd/63
+[execute_puzzle], 1427027135.37, 2, Outputs are equal.

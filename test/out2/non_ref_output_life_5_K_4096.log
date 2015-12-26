@@ -1,0 +1,8 @@
+[execute_puzzle], 1426770958.87, 2, Created log.
+[execute_puzzle], 1426770958.87, 2, Loaded input, puzzle=life
+[execute_puzzle], 1426770958.87, 2, Begin execution
+[execute_puzzle], 1426770958.87, 2, No HPCE_LIFE_OPT detected
+[execute_puzzle], 1426770958.87, 2, Using OpenCL implementation
+[execute_puzzle], 1426770958.87, 2, Choosing platform 0 for use of OpenCL
+[execute_puzzle], 1426770958.87, 2, Choosing platform 0 for use of OpenCL
+Caught exception : LoadSource : Couldn't load cl file from 'provider/life_kernel.cl'.

@@ -1,0 +1,5 @@
+[execute_puzzle], 1426965212.50, 2, Created log.
+[execute_puzzle], 1426965212.50, 2, Loaded input, puzzle=matrix_exponent
+[execute_puzzle], 1426965212.50, 2, Begin execution
+[execute_puzzle], 1426965212.50, 2, Running without Open CL
+[execute_puzzle], 1426965226.94, 2, Finished execution

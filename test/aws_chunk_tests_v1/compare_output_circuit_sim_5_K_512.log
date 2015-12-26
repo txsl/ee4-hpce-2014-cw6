@@ -1,0 +1,5 @@
+LogLevel = 2 -> 2
+[execute_puzzle], 1426997589.30, 2, Created log.
+[execute_puzzle], 1426997589.30, 2, Loading reference aws_ref/circuit_sim_5_ref_output
+[execute_puzzle], 1426997589.30, 2, Loading got /dev/fd/63
+[execute_puzzle], 1426997589.30, 2, Outputs are equal.

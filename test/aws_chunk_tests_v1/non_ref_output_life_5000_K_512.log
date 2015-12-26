@@ -1,0 +1,7 @@
+[execute_puzzle], 1427029121.87, 2, Created log.
+[execute_puzzle], 1427029122.07, 2, Loaded input, puzzle=life
+[execute_puzzle], 1427029122.07, 2, Begin execution
+[execute_puzzle], 1427029122.18, 2, HPCE_CL_ENABLE detected
+[execute_puzzle], 1427029122.18, 2, Using TBB implementation
+[execute_puzzle], 1427029122.18, 2, HPCE_CHUNKSIZE_K environment variable found as 512
+[execute_puzzle], 1427030646.92, 2, Finished execution

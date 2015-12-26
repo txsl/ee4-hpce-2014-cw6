@@ -1,0 +1,8 @@
+[execute_puzzle], 1427047916.60, 2, Created log.
+[execute_puzzle], 1427047916.79, 2, Loaded input, puzzle=life
+[execute_puzzle], 1427047916.79, 2, Begin execution
+[execute_puzzle], 1427047916.91, 2, HPCE_CL_ENABLE detected
+[execute_puzzle], 1427047916.91, 2, Using OpenCL implementation
+[execute_puzzle], 1427047917.14, 2, Choosing platform 0 for use of OpenCL
+[execute_puzzle], 1427047917.14, 2, Choosing platform 0 for use of OpenCL
+[execute_puzzle], 1427047977.23, 2, Finished execution

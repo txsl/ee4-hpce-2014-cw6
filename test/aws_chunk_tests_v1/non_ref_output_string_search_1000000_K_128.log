@@ -1,0 +1,5 @@
+[execute_puzzle], 1427000763.58, 2, Created log.
+[execute_puzzle], 1427000763.58, 2, Loaded input, puzzle=string_search
+[execute_puzzle], 1427000763.58, 2, Begin execution
+[execute_puzzle], 1427000763.58, 2, HPCE_CHUNKSIZE_K environment variable found as 128
+[execute_puzzle], 1427009239.38, 2, Finished execution

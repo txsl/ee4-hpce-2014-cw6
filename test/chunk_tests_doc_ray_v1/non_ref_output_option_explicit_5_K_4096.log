@@ -1,0 +1,7 @@
+[execute_puzzle], 1426832595.99, 2, Created log.
+[execute_puzzle], 1426832595.99, 2, Loaded input, puzzle=option_explicit
+[execute_puzzle], 1426832595.99, 2, Begin execution
+[execute_puzzle], 1426832595.99, 2, Params: pInput->u=1.41024, u=1.41024, d=0.709099, wU=0.209053, wM=0.496307, wD=0.294568
+[execute_puzzle], 1426832595.99, 2, HPCE_CHUNKSIZE_K environment variable found
+[execute_puzzle], 1426832595.99, 2, Chunksize set as K=4096
+[execute_puzzle], 1426832595.99, 2, Finished execution

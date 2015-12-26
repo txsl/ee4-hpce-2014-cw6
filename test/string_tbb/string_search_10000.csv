@@ -1,0 +1,8 @@
+LogLevel = 2 -> 2
+[run_puzzle], 1426974801.55, 2, Created log.
+[run_puzzle], 1426974801.55, 2, Creating random input
+[run_puzzle], 1426974801.55, 2, Executing puzzle
+[run_puzzle], 1426974801.55, 2, No HPCE_CHUNKSIZE_K envrionment variable found
+[run_puzzle], 1426974801.61, 2, Executing reference
+[run_puzzle], 1426974801.66, 2, Checking output
+[run_puzzle], 1426974801.66, 2, Output is correct

@@ -1,0 +1,5 @@
+LogLevel = 2 -> 2
+[execute_puzzle], 1426999267.70, 2, Created log.
+[execute_puzzle], 1426999267.70, 2, Loading reference aws_ref/string_search_500_ref_output
+[execute_puzzle], 1426999267.70, 2, Loading got /dev/fd/63
+[execute_puzzle], 1426999267.70, 2, Outputs are equal.

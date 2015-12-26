@@ -1,0 +1,5 @@
+[execute_puzzle], 1427054053.01, 2, Created log.
+[execute_puzzle], 1427054053.01, 2, Loaded input, puzzle=option_explicit
+[execute_puzzle], 1427054053.01, 2, Begin execution
+[execute_puzzle], 1427054053.01, 2, Params: pInput->u=1.44224, u=1.44224, d=0.693365, wU=0.213721, wM=0.493908, wD=0.285355
+[execute_puzzle], 1427054053.01, 2, Finished execution

@@ -1,0 +1,5 @@
+LogLevel = 2 -> 2
+[execute_puzzle], 1426773534.54, 2, Created log.
+[execute_puzzle], 1426773534.54, 2, Loading reference doc_ray_ref/median_bits_500000_ref_output
+[execute_puzzle], 1426773534.54, 2, Loading got /dev/fd/63
+[execute_puzzle], 1426773535.21, 2, Outputs are equal.

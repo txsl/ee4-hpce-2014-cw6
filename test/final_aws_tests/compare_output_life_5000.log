@@ -1,0 +1,5 @@
+LogLevel = 2 -> 2
+[execute_puzzle], 1427057220.56, 2, Created log.
+[execute_puzzle], 1427057220.56, 2, Loading reference aws_ref/life_5000_ref_output
+[execute_puzzle], 1427057220.64, 2, Loading got /dev/fd/63
+[execute_puzzle], 1427057281.39, 2, Outputs are equal.

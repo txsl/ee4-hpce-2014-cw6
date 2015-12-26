@@ -1,0 +1,6 @@
+[execute_puzzle], 1426773694.92, 2, Created log.
+[execute_puzzle], 1426773694.92, 2, Loaded input, puzzle=median_bits
+[execute_puzzle], 1426773694.92, 2, Begin execution
+[execute_puzzle], 1426773694.92, 2, Generating bits.
+[execute_puzzle], 1426773694.92, 2, HPCE_CHUNKSIZE_K environment variable found
+[execute_puzzle], 1426773694.92, 2, Chunksize set as K=1024

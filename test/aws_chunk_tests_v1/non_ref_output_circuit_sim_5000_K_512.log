@@ -1,0 +1,5 @@
+[execute_puzzle], 1426997589.47, 2, Created log.
+[execute_puzzle], 1426997589.49, 2, Loaded input, puzzle=circuit_sim
+[execute_puzzle], 1426997589.49, 2, Begin execution
+[execute_puzzle], 1426997589.49, 2, HPCE_CHUNKSIZE_K environment variable found and set to 512 
+[execute_puzzle], 1426997590.38, 2, Finished execution

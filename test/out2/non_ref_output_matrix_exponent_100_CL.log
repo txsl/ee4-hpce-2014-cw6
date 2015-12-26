@@ -1,0 +1,7 @@
+[execute_puzzle], 1427026806.28, 2, Created log.
+[execute_puzzle], 1427026806.28, 2, Loaded input, puzzle=matrix_exponent
+[execute_puzzle], 1427026806.28, 2, Begin execution
+[execute_puzzle], 1427026806.28, 2, Running with Open CL
+[execute_puzzle], 1427026806.28, 2, Choosing platform 0 for use of OpenCL
+[execute_puzzle], 1427026806.29, 2, Choosing platform 0 for use of OpenCL
+Caught exception : LoadSource : Couldn't load cl file from 'provider/matrix_exponent_kernel.cl'.

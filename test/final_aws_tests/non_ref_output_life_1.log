@@ -1,0 +1,5 @@
+[execute_puzzle], 1427057218.19, 2, Created log.
+[execute_puzzle], 1427057218.19, 2, Loaded input, puzzle=life
+[execute_puzzle], 1427057218.19, 2, Begin execution
+[execute_puzzle], 1427057218.19, 2, Using TBB implementation as n is smaller than 250
+[execute_puzzle], 1427057218.19, 2, Finished execution

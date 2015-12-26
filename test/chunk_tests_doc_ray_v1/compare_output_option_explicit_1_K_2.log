@@ -1,0 +1,6 @@
+LogLevel = 2 -> 2
+[execute_puzzle], 1426773412.68, 2, Created log.
+[execute_puzzle], 1426773412.68, 2, Loading reference doc_ray_ref/option_explicit_1_ref_output
+[execute_puzzle], 1426773412.73, 2, Loading got /dev/fd/63
+value = 0.296692, alt=0.296692, diff=0, tol=1e-08
+[execute_puzzle], 1426773412.74, 2, Outputs are equal.

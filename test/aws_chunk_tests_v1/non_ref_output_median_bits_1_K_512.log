@@ -1,0 +1,8 @@
+[execute_puzzle], 1426996780.64, 2, Created log.
+[execute_puzzle], 1426996780.64, 2, Loaded input, puzzle=median_bits
+[execute_puzzle], 1426996780.64, 2, Begin execution
+[execute_puzzle], 1426996780.64, 2, Generating bits.
+[execute_puzzle], 1426996780.64, 2, Generating bits.
+[execute_puzzle], 1426996780.64, 2, Finding median, delta=14848
+[execute_puzzle], 1426996780.64, 2, Done, median=0 (0), delta=512
+[execute_puzzle], 1426996780.64, 2, Finished execution

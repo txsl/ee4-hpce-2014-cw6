@@ -1,0 +1,7 @@
+[execute_puzzle], 1427065270.37, 2, Created log.
+[execute_puzzle], 1427065270.37, 2, Loaded input, puzzle=life
+[execute_puzzle], 1427065270.37, 2, Begin execution
+[execute_puzzle], 1427065270.37, 2, Using OpenCL implementation as we have 250 or more n
+[execute_puzzle], 1427065270.61, 2, Choosing platform 0 for use of OpenCL
+[execute_puzzle], 1427065270.61, 2, Choosing device 0 for use of OpenCL
+[execute_puzzle], 1427065270.68, 2, Finished execution

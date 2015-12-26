@@ -1,0 +1,9 @@
+[execute_puzzle], 1426773584.75, 2, Created log.
+[execute_puzzle], 1426773584.75, 2, Loaded input, puzzle=median_bits
+[execute_puzzle], 1426773584.75, 2, Begin execution
+[execute_puzzle], 1426773584.75, 2, Generating bits.
+[execute_puzzle], 1426773584.75, 2, HPCE_CHUNKSIZE_K environment variable found
+[execute_puzzle], 1426773584.75, 2, Chunksize set as K=16
+[execute_puzzle], 1426773584.76, 2, Finding median, delta=1.16741e+07
+[execute_puzzle], 1426773584.76, 2, Done, median=2128734651 (0.495635), delta=390144
+[execute_puzzle], 1426773584.76, 2, Finished execution

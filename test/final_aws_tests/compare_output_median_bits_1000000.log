@@ -1,0 +1,5 @@
+LogLevel = 2 -> 2
+[execute_puzzle], 1427054042.66, 2, Created log.
+[execute_puzzle], 1427054042.66, 2, Loading reference aws_ref/median_bits_1000000_ref_output
+[execute_puzzle], 1427054042.66, 2, Loading got /dev/fd/63
+[execute_puzzle], 1427054042.80, 2, Outputs are equal.

@@ -1,0 +1,4 @@
+LogLevel = 2 -> 2
+[run_puzzle], 1426523958.03, 2, Created log.
+[run_puzzle], 1426523958.03, 2, Creating random input
+[run_puzzle], 1426523958.40, 2, Writing data to stdout
